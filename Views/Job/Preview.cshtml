@@ -1,0 +1,144 @@
+@model JobApplicationBot.Models.EmailPreviewModel
+@{
+    ViewData["Title"] = "Email Preview";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <!-- Steps indicator -->
+        <div class="d-flex justify-content-center gap-4 mb-4">
+            <div class="d-flex align-items-center gap-2 opacity-50">
+                <span class="step-badge">1</span>
+                <span class="fw-semibold">Input Job</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="step-badge">2</span>
+                <span class="fw-semibold text-dark">Preview Email</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 opacity-50">
+                <span class="step-badge">3</span>
+                <span class="fw-semibold">Send</span>
+            </div>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger alert-dismissible fade show">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <div class="row g-4">
+            <!-- Job Analysis Summary -->
+            <div class="col-lg-4">
+                <div class="card card-main h-100">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="bi bi-clipboard-data me-2"></i>Job Analysis</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <small class="text-muted text-uppercase fw-bold">Position</small>
+                            <p class="fw-semibold mb-0">@Model.JobTitle</p>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted text-uppercase fw-bold">Company</small>
+                            <p class="fw-semibold mb-0">@Model.CompanyName</p>
+                        </div>
+                        @if (Model.MatchedSkills.Any())
+                        {
+                            <div class="mb-3">
+                                <small class="text-muted text-uppercase fw-bold d-block mb-2">Your Matching Skills</small>
+                                @foreach (var skill in Model.MatchedSkills)
+                                {
+                                    <span class="skill-badge">
+                                        <i class="bi bi-check-circle-fill me-1" style="color: #28a745;"></i>@skill
+                                    </span>
+                                }
+                            </div>
+                        }
+                        <div class="mb-0">
+                            <small class="text-muted text-uppercase fw-bold">CV Attachment</small>
+                            <p class="mb-0">
+                                @if (!string.IsNullOrEmpty(Model.CvPath))
+                                {
+                                    <span class="text-success"><i class="bi bi-paperclip me-1"></i>@System.IO.Path.GetFileName(Model.CvPath)</span>
+                                }
+                                else
+                                {
+                                    <span class="text-warning"><i class="bi bi-exclamation-circle me-1"></i>No CV configured</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Editor -->
+            <div class="col-lg-8">
+                <div class="card card-main">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="bi bi-envelope me-2"></i>Email Preview</h6>
+                        <span class="badge bg-white text-dark">
+                            <i class="bi bi-pencil me-1"></i>Editable
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <form asp-controller="Job" asp-action="Send" method="post" id="sendForm">
+                            <input type="hidden" asp-for="JobTitle" />
+                            <input type="hidden" asp-for="CompanyName" />
+                            <input type="hidden" asp-for="CvPath" />
+                            @for (int i = 0; i < Model.MatchedSkills.Count; i++)
+                            {
+                                <input type="hidden" name="MatchedSkills[@i]" value="@Model.MatchedSkills[i]" />
+                            }
+
+                            <div class="mb-3">
+                                <label asp-for="ToEmail" class="form-label fw-semibold">
+                                    <i class="bi bi-person me-1"></i>To
+                                </label>
+                                <input asp-for="ToEmail" class="form-control" placeholder="recruiter@company.com" />
+                                <span asp-validation-for="ToEmail" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Subject" class="form-label fw-semibold">
+                                    <i class="bi bi-tag me-1"></i>Subject
+                                </label>
+                                <input asp-for="Subject" class="form-control" />
+                                <span asp-validation-for="Subject" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Body" class="form-label fw-semibold">
+                                    <i class="bi bi-body-text me-1"></i>Email Body
+                                </label>
+                                <textarea asp-for="Body" class="form-control" rows="16" style="line-height: 1.7;"></textarea>
+                                <span asp-validation-for="Body" class="text-danger small"></span>
+                            </div>
+
+                            <div class="d-flex gap-3 justify-content-between">
+                                <a asp-controller="Job" asp-action="Index" class="btn btn-outline-custom">
+                                    <i class="bi bi-arrow-left me-1"></i>Back
+                                </a>
+                                <button type="submit" class="btn btn-primary-gradient btn-lg">
+                                    <i class="bi bi-send me-2"></i>Send Email
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('sendForm').addEventListener('submit', function () {
+            document.getElementById('loadingOverlay').querySelector('h5').textContent = 'Sending email...';
+            document.getElementById('loadingOverlay').querySelector('p').textContent = 'Connecting to Gmail SMTP';
+            document.getElementById('loadingOverlay').classList.add('active');
+        });
+    </script>
+}

@@ -1,0 +1,114 @@
+@model JobApplicationBot.Models.JobInput
+@{
+    ViewData["Title"] = "Analyze Job";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold mb-2" style="color: #1a1a2e;">
+                <i class="bi bi-briefcase-fill me-2" style="color: var(--gradient-start);"></i>
+                Job Application Bot
+            </h1>
+            <p class="text-muted fs-5">Paste a job URL or description, and let AI craft the perfect application email</p>
+        </div>
+
+        <!-- Steps indicator -->
+        <div class="d-flex justify-content-center gap-4 mb-4">
+            <div class="d-flex align-items-center gap-2">
+                <span class="step-badge">1</span>
+                <span class="fw-semibold text-dark">Input Job</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 opacity-50">
+                <span class="step-badge">2</span>
+                <span class="fw-semibold">Preview Email</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 opacity-50">
+                <span class="step-badge">3</span>
+                <span class="fw-semibold">Send</span>
+            </div>
+        </div>
+
+        <div class="card card-main">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-search me-2"></i>Enter Job Details</h5>
+            </div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form asp-controller="Job" asp-action="Analyze" method="post" id="analyzeForm">
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-link-45deg me-1 text-primary"></i>Job URL
+                        </label>
+                        <input asp-for="JobUrl" class="form-control form-control-lg" 
+                               placeholder="https://www.linkedin.com/jobs/view/..." />
+                        <div class="form-text">Paste the direct link to the job posting</div>
+                    </div>
+
+                    <div class="text-center my-3">
+                        <span class="badge bg-secondary px-3 py-2">OR</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-file-text me-1 text-primary"></i>Job Description
+                        </label>
+                        <textarea asp-for="JobDescription" class="form-control" rows="10"
+                                  placeholder="Paste the job description here...&#10;&#10;Include the job title, requirements, responsibilities, and any contact email if available."></textarea>
+                        <div class="form-text">Copy and paste the full job description text</div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary-gradient btn-lg">
+                            <i class="bi bi-magic me-2"></i>Analyze with AI &amp; Generate Email
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card card-main mt-4">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2 text-primary"></i>How it works</h6>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="p-3 rounded-3" style="background: rgba(102,126,234,.05);">
+                            <i class="bi bi-1-circle-fill text-primary fs-4 d-block mb-2"></i>
+                            <strong>Input</strong>
+                            <p class="text-muted small mb-0">Provide a job URL or paste the description</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 rounded-3" style="background: rgba(102,126,234,.05);">
+                            <i class="bi bi-2-circle-fill text-primary fs-4 d-block mb-2"></i>
+                            <strong>AI Analysis</strong>
+                            <p class="text-muted small mb-0">Gemini AI extracts requirements and crafts your email</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 rounded-3" style="background: rgba(102,126,234,.05);">
+                            <i class="bi bi-3-circle-fill text-primary fs-4 d-block mb-2"></i>
+                            <strong>Review &amp; Send</strong>
+                            <p class="text-muted small mb-0">Preview the email, edit if needed, then send with CV</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('analyzeForm').addEventListener('submit', function () {
+            document.getElementById('loadingOverlay').classList.add('active');
+        });
+    </script>
+}
