@@ -1,6 +1,44 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="page-hero">
+            <h1>
+                <i class="bi bi-shield-check hero-icon me-2"></i>
+                @ViewData["Title"]
+            </h1>
+            <p class="lead">How @AppBranding.Name handles your data</p>
+        </div>
+
+        <div class="card card-main">
+            <div class="card-body">
+                <h5 class="fw-semibold">What we store</h5>
+                <ul class="text-brand-muted">
+                    <li>Account email and authentication data (ASP.NET Identity).</li>
+                    <li>Profile fields, CV file bytes, and application history.</li>
+                    <li>Encrypted Gmail App Password and optional personal Gemini API key (Data Protection).</li>
+                    <li>AI usage counters and subscription / Stripe identifiers when you subscribe.</li>
+                </ul>
+
+                <h5 class="fw-semibold">How we use it</h5>
+                <p class="text-brand-muted">
+                    Data is used to personalize AI emails, send applications from your Gmail, enforce quotas, and process billing.
+                    Job descriptions you paste or scrape may be sent to the configured AI provider (Google Gemini or compatible).
+                </p>
+
+                <h5 class="fw-semibold">What we do not do</h5>
+                <p class="text-brand-muted">
+                    We do not sell your personal data. Application emails are sent from <strong>your</strong> mailbox, not a shared marketing list.
+                </p>
+
+                <h5 class="fw-semibold mb-0">Contact</h5>
+                <p class="text-brand-muted mb-0">
+                    For data questions, contact us through the email address configured for your account notifications.
+                    See also our <a asp-controller="Home" asp-action="Terms">Terms of Service</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

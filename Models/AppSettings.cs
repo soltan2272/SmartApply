@@ -3,8 +3,9 @@ namespace JobApplicationBot.Models;
 public class AiSettings
 {
     public string ApiKey { get; set; } = string.Empty;
-    public string Model { get; set; } = "gemini-3-flash-preview";
+    public string Model { get; set; } = "gemini-1.5-flash";
     public string BaseUrl { get; set; } = "https://generativelanguage.googleapis.com/v1beta";
+    public int FreeQuotaPerMonth { get; set; } = 20;
 }
 
 public class EmailSettings
@@ -16,14 +17,39 @@ public class EmailSettings
     public string SenderName { get; set; } = string.Empty;
 }
 
-public class UserProfile
+public class StripeSettings
 {
-    public string FullName { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
-    public string Phone { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string LinkedIn { get; set; } = string.Empty;
-    public string CvFilePath { get; set; } = string.Empty;
-    public string SkillsSummary { get; set; } = string.Empty;
-    public string ExperienceSummary { get; set; } = string.Empty;
+    public string SecretKey { get; set; } = string.Empty;
+    public string PublishableKey { get; set; } = string.Empty;
+    public string WebhookSecret { get; set; } = string.Empty;
+    public string ProPriceId { get; set; } = string.Empty;
+    public string PowerPriceId { get; set; } = string.Empty;
+
+    public bool IsConfigured =>
+        !string.IsNullOrWhiteSpace(SecretKey)
+        && !string.IsNullOrWhiteSpace(ProPriceId)
+        && !string.IsNullOrWhiteSpace(PowerPriceId);
+}
+
+public class SubscriptionSettings
+{
+    public int FreeAiPerMonth { get; set; } = 20;
+    public int ProAiPerMonth { get; set; } = 200;
+    public int PowerAiPerMonth { get; set; } = 500;
+    public int FreeBulkMaxRecipients { get; set; } = 10;
+    public int ProBulkMaxRecipients { get; set; } = 200;
+    public int PowerBulkMaxRecipients { get; set; } = 500;
+}
+
+public class DataProtectionSettings
+{
+    public string KeysPath { get; set; } = "keys";
+}
+
+public class JwtSettings
+{
+    public string Key { get; set; } = string.Empty;
+    public string Issuer { get; set; } = "SmartApplyHub";
+    public string Audience { get; set; } = "SmartApplyHub.Mobile";
+    public int ExpiryMinutes { get; set; } = 1440;
 }

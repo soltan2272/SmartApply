@@ -10,4 +10,7 @@ public class JobAnalysisResult
     public string ExperienceLevel { get; set; } = string.Empty;
     public string Summary { get; set; } = string.Empty;
     public string RawDescription { get; set; } = string.Empty;
+
+    /// <summary>0–100 fit score vs candidate profile/CV (filled during email generation).</summary>
+    public int MatchScore { get; set; }
 }

@@ -1,0 +1,35 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Server=sql;Database=JobApplicationBot;User Id=sa;Password=Your_strong_Passw0rd;TrustServerCertificate=True;MultipleActiveResultSets=true"
+      Ai__ApiKey: "${Ai__ApiKey}"
+      Email__SenderEmail: "${Email__SenderEmail}"
+      Email__SenderPassword: "${Email__SenderPassword}"
+      Stripe__SecretKey: "${Stripe__SecretKey:-}"
+      Stripe__PublishableKey: "${Stripe__PublishableKey:-}"
+      Stripe__WebhookSecret: "${Stripe__WebhookSecret:-}"
+      Stripe__ProPriceId: "${Stripe__ProPriceId:-}"
+      Stripe__PowerPriceId: "${Stripe__PowerPriceId:-}"
+      DataProtection__KeysPath: /app/keys
+    volumes:
+      - dataprotection_keys:/app/keys
+    depends_on:
+      - sql
+
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Your_strong_Passw0rd"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+
+volumes:
+  dataprotection_keys:
+  sqldata:

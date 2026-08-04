@@ -1,0 +1,89 @@
+@model List<JobApplicationBot.Services.Admin.AdminUserRow>
+@{
+    ViewData["Title"] = "Admin Users";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-12">
+        <div class="page-hero">
+            <h1><i class="bi bi-people hero-icon me-2"></i>Users</h1>
+            <p class="lead"><a asp-action="Index">Back to dashboard</a></p>
+        </div>
+
+        @if (TempData["AdminSuccess"] is string success)
+        {
+            <div class="alert alert-success">@success</div>
+        }
+        @if (TempData["AdminError"] is string error)
+        {
+            <div class="alert alert-danger">@error</div>
+        }
+
+        <div class="card card-main">
+            <div class="card-body table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Plan</th>
+                        <th>Tokens</th>
+                        <th>Last login</th>
+                        <th>Confirmed</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var u in Model)
+                    {
+                        <tr>
+                            <td>@u.Email</td>
+                            <td><span class="badge bg-secondary">@u.Plan</span></td>
+                            <td>@u.QuotaUsed / @u.QuotaLimit</td>
+                            <td class="small text-muted">@(u.LastLoginAt?.ToLocalTime().ToString("g") ?? "Never")</td>
+                            <td>@(u.EmailConfirmed ? "Yes" : "No")</td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <form asp-action="ResetUserTokens" method="post">
+                                        <input type="hidden" name="userId" value="@u.UserId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-warning">Reset tokens</button>
+                                    </form>
+                                    <form asp-action="SetUserPlan" method="post" class="d-flex gap-1">
+                                        <input type="hidden" name="userId" value="@u.UserId" />
+                                        <select name="plan" class="form-select form-select-sm">
+                                            @if (u.Plan == "Free")
+                                            {
+                                                <option value="Free" selected>Free</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Free">Free</option>
+                                            }
+                                            @if (u.Plan == "Pro")
+                                            {
+                                                <option value="Pro" selected>Pro</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Pro">Pro</option>
+                                            }
+                                            @if (u.Plan == "Power")
+                                            {
+                                                <option value="Power" selected>Power</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Power">Power</option>
+                                            }
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">Set</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

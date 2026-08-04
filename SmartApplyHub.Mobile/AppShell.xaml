@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:pages="clr-namespace:SmartApplyHub.Mobile.Pages"
+       x:Class="SmartApplyHub.Mobile.AppShell"
+       Title="SmartApply Hub"
+       Shell.FlyoutBehavior="Flyout">
+
+    <FlyoutItem Title="Dashboard" Icon="{x:Null}">
+        <ShellContent ContentTemplate="{DataTemplate pages:DashboardPage}" Route="Dashboard" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Search Jobs" Icon="{x:Null}">
+        <ShellContent ContentTemplate="{DataTemplate pages:JobSearchPage}" Route="JobSearch" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Applications" Icon="{x:Null}">
+        <ShellContent ContentTemplate="{DataTemplate pages:ApplicationsPage}" Route="Applications" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Profile" Icon="{x:Null}">
+        <ShellContent ContentTemplate="{DataTemplate pages:ProfilePage}" Route="Profile" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Subscription" Icon="{x:Null}">
+        <ShellContent ContentTemplate="{DataTemplate pages:SubscriptionPage}" Route="Subscription" />
+    </FlyoutItem>
+
+</Shell>

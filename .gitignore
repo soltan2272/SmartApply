@@ -1,0 +1,31 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+## Secrets & local config
+appsettings.*.local.json
+.env
+.env.*
+!.env.example
+secrets.json
+
+## Data Protection keys (persist outside repo in production)
+keys/
+App_Data/keys/
+
+## OS / IDE
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+## Logs & publish
+*.log
+publish/
+out/

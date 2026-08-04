@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SmartApplyHub.Mobile.ViewModels"
+             x:Class="SmartApplyHub.Mobile.Pages.DashboardPage"
+             x:DataType="vm:DashboardViewModel"
+             Title="Dashboard">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <Label Text="{Binding UserEmail, StringFormat='Welcome, {0}'}"
+                   FontSize="20" FontAttributes="Bold" />
+
+            <!-- Quota Card -->
+            <Frame Padding="16" CornerRadius="12" HasShadow="True" BackgroundColor="White">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="AI Quota" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="{Binding Plan, StringFormat='Plan: {0}'}" />
+                    <ProgressBar Progress="{Binding QuotaUsed}" />
+                    <Label Text="{Binding QuotaRemaining, StringFormat='{0} analyses remaining'}"
+                           TextColor="{StaticResource DarkGray}" />
+                    <Label FontSize="12" TextColor="{StaticResource DarkGray}">
+                        <Label.Text>
+                            <MultiBinding StringFormat="{}{0} / {1} used this month">
+                                <Binding Path="QuotaUsed" />
+                                <Binding Path="QuotaLimit" />
+                            </MultiBinding>
+                        </Label.Text>
+                    </Label>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Stats Card -->
+            <Frame Padding="16" CornerRadius="12" HasShadow="True" BackgroundColor="White">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Applications" FontSize="18" FontAttributes="Bold" />
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="8">
+                        <Label Text="{Binding TotalApplications, StringFormat='Total: {0}'}" Grid.Row="0" Grid.Column="0" />
+                        <Label Text="{Binding TotalSent, StringFormat='Sent: {0}'}" Grid.Row="0" Grid.Column="1" />
+                        <Label Text="{Binding PipelineInterviewing, StringFormat='Interviewing: {0}'}" Grid.Row="1" Grid.Column="0" />
+                        <Label Text="{Binding PipelineOffer, StringFormat='Offers: {0}'}" Grid.Row="1" Grid.Column="1" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="{StaticResource Danger}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+
+            <Button Text="Logout"
+                    Command="{Binding LogoutCommand}"
+                    BackgroundColor="{StaticResource Danger}"
+                    HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -7,12 +7,12 @@
 
 <div class="row justify-content-center">
     <div class="col-lg-10">
-        <div class="text-center mb-4">
-            <h1 class="fw-bold mb-2" style="color: #1a1a2e;">
-                <i class="bi bi-search me-2" style="color: var(--gradient-start);"></i>
-                Find Your Next Role in Egypt
+        <div class="page-hero">
+            <h1>
+                <i class="bi bi-search hero-icon me-2"></i>
+                Find Your Next Role
             </h1>
-            <p class="text-muted fs-5">Search LinkedIn job listings and posts in one place</p>
+            <p class="lead">Search LinkedIn job listings and posts — defaults to Egypt, change location anytime</p>
         </div>
 
         <div class="card card-main mb-4">
@@ -30,7 +30,7 @@
 
                 <form asp-controller="Job" asp-action="Search" method="post" id="searchForm">
                     <div class="row g-3 align-items-end">
-                        <div class="col-md-4">
+                        <div class="col-12 col-md-3">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-briefcase me-1 text-primary"></i>Job Title
                             </label>
@@ -38,9 +38,17 @@
                                    placeholder="e.g. Software Engineer" />
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-12 col-md-3">
                             <label class="form-label fw-semibold">
-                                <i class="bi bi-bar-chart me-1 text-primary"></i>Experience Level
+                                <i class="bi bi-geo-alt me-1 text-primary"></i>Location
+                            </label>
+                            <input asp-for="Filter.Location" class="form-control form-control-lg"
+                                   placeholder="Egypt" />
+                        </div>
+
+                        <div class="col-12 col-md-2">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-bar-chart me-1 text-primary"></i>Experience
                             </label>
                             <select asp-for="Filter.ExperienceLevel" class="form-select form-select-lg">
                                 <option value="">Any Level</option>
@@ -53,7 +61,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-12 col-md-2">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-calendar-event me-1 text-primary"></i>Date Posted
                             </label>
@@ -65,7 +73,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-2">
+                        <div class="col-12 col-md-2">
                             <button type="submit" class="btn btn-primary-gradient btn-lg w-100">
                                 <i class="bi bi-search me-1"></i>Search
                             </button>
@@ -117,7 +125,7 @@
                     @foreach (var job in Model.PagedResults)
                     {
                         var isJob = job.ResultType == "Job";
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="card card-main h-100 job-card">
                                 <div class="card-body d-flex flex-column">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -142,7 +150,7 @@
                                             </div>
                                         }
                                         <div class="flex-grow-1 min-width-0">
-                                            <h6 class="fw-bold mb-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="@job.Title">
+                                            <h6 class="fw-bold mb-1 clamp-2" title="@job.Title">
                                                 @job.Title
                                             </h6>
                                             <p class="text-muted mb-0 small">
@@ -153,7 +161,7 @@
 
                                     @if (!string.IsNullOrEmpty(job.Snippet))
                                     {
-                                        <p class="text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                        <p class="text-brand-muted small mb-3 clamp-3">
                                             @job.Snippet
                                         </p>
                                     }
@@ -173,7 +181,7 @@
                                         }
                                     </div>
 
-                                    <div class="mt-auto d-flex gap-2">
+                                    <div class="mt-auto job-card-actions">
                                         @if (!string.IsNullOrEmpty(job.Url))
                                         {
                                             @if (isJob)
@@ -256,32 +264,32 @@
                 <div class="card-body">
                     <h6 class="fw-bold mb-3"><i class="bi bi-lightbulb me-2 text-primary"></i>How It Works</h6>
                     <div class="row g-3">
-                        <div class="col-md-3">
-                            <div class="p-3 rounded-3" style="background: rgba(102,126,234,.05);">
-                                <i class="bi bi-briefcase text-primary fs-4 d-block mb-2"></i>
+                        <div class="col-6 col-md-3">
+                            <div class="feature-tile">
+                                <i class="bi bi-briefcase"></i>
                                 <strong>Job Listings</strong>
-                                <p class="text-muted small mb-0">Finds formal LinkedIn job postings with "Apply with AI" support</p>
+                                <p class="text-brand-muted small mb-0">Finds formal LinkedIn job postings with "Apply with AI" support</p>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="p-3 rounded-3" style="background: rgba(102,126,234,.05);">
-                                <i class="bi bi-chat-square-text text-primary fs-4 d-block mb-2"></i>
+                        <div class="col-6 col-md-3">
+                            <div class="feature-tile">
+                                <i class="bi bi-chat-square-text"></i>
                                 <strong>LinkedIn Posts</strong>
-                                <p class="text-muted small mb-0">Discovers hiring posts from people sharing opportunities</p>
+                                <p class="text-brand-muted small mb-0">Discovers hiring posts from people sharing opportunities</p>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="p-3 rounded-3" style="background: rgba(102,126,234,.05);">
-                                <i class="bi bi-funnel text-primary fs-4 d-block mb-2"></i>
+                        <div class="col-6 col-md-3">
+                            <div class="feature-tile">
+                                <i class="bi bi-funnel"></i>
                                 <strong>Use Filters</strong>
-                                <p class="text-muted small mb-0">Narrow results with experience level and posting date</p>
+                                <p class="text-brand-muted small mb-0">Narrow results with experience level and posting date</p>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="p-3 rounded-3" style="background: rgba(102,126,234,.05);">
-                                <i class="bi bi-magic text-primary fs-4 d-block mb-2"></i>
+                        <div class="col-6 col-md-3">
+                            <div class="feature-tile">
+                                <i class="bi bi-magic"></i>
                                 <strong>Apply with AI</strong>
-                                <p class="text-muted small mb-0">Auto-generate a tailored application email for job listings</p>
+                                <p class="text-brand-muted small mb-0">Auto-generate a tailored application email for job listings</p>
                             </div>
                         </div>
                     </div>

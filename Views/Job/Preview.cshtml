@@ -5,17 +5,16 @@
 
 <div class="row justify-content-center">
     <div class="col-lg-9">
-        <!-- Steps indicator -->
-        <div class="d-flex justify-content-center gap-4 mb-4">
-            <div class="d-flex align-items-center gap-2 opacity-50">
+        <div class="steps-indicator">
+            <div class="step-item inactive">
                 <span class="step-badge">1</span>
                 <span class="fw-semibold">Input Job</span>
             </div>
-            <div class="d-flex align-items-center gap-2">
+            <div class="step-item">
                 <span class="step-badge">2</span>
-                <span class="fw-semibold text-dark">Preview Email</span>
+                <span class="fw-semibold">Preview Email</span>
             </div>
-            <div class="d-flex align-items-center gap-2 opacity-50">
+            <div class="step-item inactive">
                 <span class="step-badge">3</span>
                 <span class="fw-semibold">Send</span>
             </div>
@@ -45,6 +44,20 @@
                             <small class="text-muted text-uppercase fw-bold">Company</small>
                             <p class="fw-semibold mb-0">@Model.CompanyName</p>
                         </div>
+                        <div class="mb-3">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1">Match Score</small>
+                            @{
+                                var scoreClass = Model.MatchScore >= 70 ? "text-success" : Model.MatchScore >= 40 ? "text-warning" : "text-danger";
+                            }
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fs-3 fw-bold @scoreClass">@Model.MatchScore%</span>
+                                <div class="progress flex-grow-1" style="height: 8px;">
+                                    <div class="progress-bar @(Model.MatchScore >= 70 ? "bg-success" : Model.MatchScore >= 40 ? "bg-warning" : "bg-danger")"
+                                         role="progressbar" style="width: @Model.MatchScore%"></div>
+                                </div>
+                            </div>
+                            <small class="text-muted">Based on required skills vs your profile/CV</small>
+                        </div>
                         @if (Model.MatchedSkills.Any())
                         {
                             <div class="mb-3">
@@ -60,13 +73,13 @@
                         <div class="mb-0">
                             <small class="text-muted text-uppercase fw-bold">CV Attachment</small>
                             <p class="mb-0">
-                                @if (!string.IsNullOrEmpty(Model.CvPath))
+                                @if (Model.HasCvOnFile)
                                 {
-                                    <span class="text-success"><i class="bi bi-paperclip me-1"></i>@System.IO.Path.GetFileName(Model.CvPath)</span>
+                                    <span class="text-success"><i class="bi bi-paperclip me-1"></i>CV will be attached</span>
                                 }
                                 else
                                 {
-                                    <span class="text-warning"><i class="bi bi-exclamation-circle me-1"></i>No CV configured</span>
+                                    <span class="text-warning"><i class="bi bi-exclamation-circle me-1"></i>No CV on file. <a asp-controller="Profile" asp-action="Index">Upload one</a>.</span>
                                 }
                             </p>
                         </div>
@@ -87,7 +100,7 @@
                         <form asp-controller="Job" asp-action="Send" method="post" id="sendForm">
                             <input type="hidden" asp-for="JobTitle" />
                             <input type="hidden" asp-for="CompanyName" />
-                            <input type="hidden" asp-for="CvPath" />
+                            <input type="hidden" asp-for="MatchScore" />
                             @for (int i = 0; i < Model.MatchedSkills.Count; i++)
                             {
                                 <input type="hidden" name="MatchedSkills[@i]" value="@Model.MatchedSkills[i]" />
@@ -117,7 +130,7 @@
                                 <span asp-validation-for="Body" class="text-danger small"></span>
                             </div>
 
-                            <div class="d-flex gap-3 justify-content-between">
+                            <div class="action-bar">
                                 <a asp-controller="Job" asp-action="Index" class="btn btn-outline-custom">
                                     <i class="bi bi-arrow-left me-1"></i>Back
                                 </a>

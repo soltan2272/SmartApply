@@ -1,0 +1,55 @@
+@model JobApplicationBot.Services.Admin.AdminDashboardStats
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-11">
+        <div class="page-hero">
+            <h1><i class="bi bi-shield-lock hero-icon me-2"></i>Admin Dashboard</h1>
+            <p class="lead">Track users, subscription requests, and token resets.</p>
+        </div>
+
+        @if (TempData["AdminSuccess"] is string success)
+        {
+            <div class="alert alert-success">@success</div>
+        }
+        @if (TempData["AdminError"] is string error)
+        {
+            <div class="alert alert-danger">@error</div>
+        }
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card card-main h-100"><div class="card-body">
+                    <div class="text-muted small">Users</div>
+                    <div class="fs-3 fw-bold">@Model.TotalUsers</div>
+                </div></div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-main h-100"><div class="card-body">
+                    <div class="text-muted small">Logged in (7 days)</div>
+                    <div class="fs-3 fw-bold">@Model.LoggedInLast7Days</div>
+                </div></div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-main h-100"><div class="card-body">
+                    <div class="text-muted small">Pending subscriptions</div>
+                    <div class="fs-3 fw-bold text-warning">@Model.PendingSubscriptions</div>
+                </div></div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-main h-100"><div class="card-body">
+                    <div class="text-muted small">Pending token resets</div>
+                    <div class="fs-3 fw-bold text-warning">@Model.PendingTokenResets</div>
+                </div></div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-primary-gradient" asp-action="Users"><i class="bi bi-people me-1"></i>Users</a>
+            <a class="btn btn-outline-custom" asp-action="SubscriptionRequests"><i class="bi bi-credit-card me-1"></i>Subscription requests</a>
+            <a class="btn btn-outline-custom" asp-action="TokenResetRequests"><i class="bi bi-arrow-counterclockwise me-1"></i>Token reset requests</a>
+        </div>
+    </div>
+</div>

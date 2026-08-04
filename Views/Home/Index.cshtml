@@ -1,8 +1,71 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<section class="landing-hero">
+    <h1>
+        Apply smarter with<br />
+        <span class="gradient-text">@AppBranding.Name</span>
+    </h1>
+    <p class="subtitle">@AppBranding.Tagline. Paste a job link, let AI craft your email, and send with your CV in minutes.</p>
+
+    <div class="landing-cta">
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary-gradient btn-lg px-4">
+            <i class="bi bi-person-plus me-2"></i>Create free account
+        </a>
+        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-custom btn-lg px-4">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Sign in
+        </a>
+    </div>
+
+    <div class="landing-stats">
+        <div class="landing-stat">
+            <strong><i class="bi bi-magic"></i></strong>
+            <span>AI-tailored application emails</span>
+        </div>
+        <div class="landing-stat">
+            <strong><i class="bi bi-search"></i></strong>
+            <span>LinkedIn job search in Egypt</span>
+        </div>
+        <div class="landing-stat">
+            <strong><i class="bi bi-send-check"></i></strong>
+            <span>Bulk apply to multiple recruiters</span>
+        </div>
+    </div>
+</section>
+
+<div class="row g-4 justify-content-center mb-4">
+    <div class="col-md-4">
+        <div class="card card-main h-100">
+            <div class="card-body">
+                <div class="feature-tile border-0 bg-transparent p-0 shadow-none">
+                    <i class="bi bi-1-circle-fill"></i>
+                    <strong>Set up your profile</strong>
+                    <p class="text-brand-muted small mb-0 mt-1">Add your skills, experience, and CV once — we personalize every application.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-main h-100">
+            <div class="card-body">
+                <div class="feature-tile border-0 bg-transparent p-0 shadow-none">
+                    <i class="bi bi-2-circle-fill"></i>
+                    <strong>Find or paste a job</strong>
+                    <p class="text-brand-muted small mb-0 mt-1">Search LinkedIn listings or paste any job URL or description.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-main h-100">
+            <div class="card-body">
+                <div class="feature-tile border-0 bg-transparent p-0 shadow-none">
+                    <i class="bi bi-3-circle-fill"></i>
+                    <strong>Review &amp; send</strong>
+                    <p class="text-brand-muted small mb-0 mt-1">Preview the AI-generated email, edit if needed, and send from your Gmail.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

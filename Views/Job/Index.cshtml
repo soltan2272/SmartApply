@@ -1,29 +1,28 @@
 @model JobApplicationBot.Models.JobInput
 @{
-    ViewData["Title"] = "Analyze Job";
+    ViewData["Title"] = "Apply with AI";
 }
 
 <div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="text-center mb-4">
-            <h1 class="fw-bold mb-2" style="color: #1a1a2e;">
-                <i class="bi bi-briefcase-fill me-2" style="color: var(--gradient-start);"></i>
-                Job Application Bot
+    <div class="col-xl-8">
+        <div class="page-hero">
+            <h1>
+                <i class="bi bi-briefcase-fill hero-icon me-2"></i>
+                @AppBranding.Name
             </h1>
-            <p class="text-muted fs-5">Paste a job URL or description, and let AI craft the perfect application email</p>
+            <p class="lead">Paste a job URL or description, and let AI craft the perfect application email</p>
         </div>
 
-        <!-- Steps indicator -->
-        <div class="d-flex justify-content-center gap-4 mb-4">
-            <div class="d-flex align-items-center gap-2">
+        <div class="steps-indicator">
+            <div class="step-item">
                 <span class="step-badge">1</span>
-                <span class="fw-semibold text-dark">Input Job</span>
+                <span class="fw-semibold">Input Job</span>
             </div>
-            <div class="d-flex align-items-center gap-2 opacity-50">
+            <div class="step-item inactive">
                 <span class="step-badge">2</span>
                 <span class="fw-semibold">Preview Email</span>
             </div>
-            <div class="d-flex align-items-center gap-2 opacity-50">
+            <div class="step-item inactive">
                 <span class="step-badge">3</span>
                 <span class="fw-semibold">Send</span>
             </div>
@@ -47,7 +46,7 @@
                         <label class="form-label fw-semibold">
                             <i class="bi bi-link-45deg me-1 text-primary"></i>Job URL
                         </label>
-                        <input asp-for="JobUrl" class="form-control form-control-lg" 
+                        <input asp-for="JobUrl" class="form-control form-control-lg"
                                placeholder="https://www.linkedin.com/jobs/view/..." />
                         <div class="form-text">Paste the direct link to the job posting</div>
                     </div>
@@ -78,25 +77,25 @@
             <div class="card-body">
                 <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2 text-primary"></i>How it works</h6>
                 <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="p-3 rounded-3" style="background: rgba(102,126,234,.05);">
-                            <i class="bi bi-1-circle-fill text-primary fs-4 d-block mb-2"></i>
+                    <div class="col-sm-4">
+                        <div class="feature-tile">
+                            <i class="bi bi-1-circle-fill"></i>
                             <strong>Input</strong>
-                            <p class="text-muted small mb-0">Provide a job URL or paste the description</p>
+                            <p class="text-brand-muted small mb-0">Provide a job URL or paste the description</p>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="p-3 rounded-3" style="background: rgba(102,126,234,.05);">
-                            <i class="bi bi-2-circle-fill text-primary fs-4 d-block mb-2"></i>
+                    <div class="col-sm-4">
+                        <div class="feature-tile">
+                            <i class="bi bi-2-circle-fill"></i>
                             <strong>AI Analysis</strong>
-                            <p class="text-muted small mb-0">Gemini AI extracts requirements and crafts your email</p>
+                            <p class="text-brand-muted small mb-0">Gemini AI extracts requirements and crafts your email</p>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="p-3 rounded-3" style="background: rgba(102,126,234,.05);">
-                            <i class="bi bi-3-circle-fill text-primary fs-4 d-block mb-2"></i>
+                    <div class="col-sm-4">
+                        <div class="feature-tile">
+                            <i class="bi bi-3-circle-fill"></i>
                             <strong>Review &amp; Send</strong>
-                            <p class="text-muted small mb-0">Preview the email, edit if needed, then send with CV</p>
+                            <p class="text-brand-muted small mb-0">Preview the email, edit if needed, then send with CV</p>
                         </div>
                     </div>
                 </div>

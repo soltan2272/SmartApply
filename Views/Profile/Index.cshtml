@@ -1,0 +1,227 @@
+@model JobApplicationBot.Models.ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="page-hero">
+            <h1>
+                <i class="bi bi-person-circle hero-icon me-2"></i>
+                My Profile
+            </h1>
+            <p class="lead">Your details and CV power personalized AI application emails.</p>
+        </div>
+
+        @if (TempData["ProfileSaved"] is string saved)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i>@saved
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["ProfileIncomplete"] is string warning)
+        {
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>@warning
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+        }
+
+        <!-- Quota indicator -->
+        <div class="card card-main mb-4">
+            <div class="card-body">
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="fw-bold mb-1"><i class="bi bi-lightning-charge me-2 text-primary"></i>AI Usage</h6>
+                        <p class="mb-1 small">
+                            Plan: <span class="badge bg-primary">@Model.SubscriptionPlan</span>
+                            <a asp-controller="Billing" asp-action="Index" class="ms-2">Request upgrade / tokens</a>
+                        </p>
+                        <p class="text-brand-muted mb-0 small">Plan quota: <strong>@Model.QuotaUsed / @Model.QuotaLimit</strong> analyses used this month.</p>
+                    </div>
+                    @if (Model.QuotaLimit > 0)
+                    {
+                        var pct = Model.QuotaLimit == 0 ? 0 : (int)(100.0 * Model.QuotaUsed / Model.QuotaLimit);
+                        <div class="quota-bar-wrap">
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar" style="width: @pct%;" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ExistingCvFileName) || !string.IsNullOrWhiteSpace(Model.ExperienceSummary))
+        {
+            <div class="card card-main mb-4">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2"><i class="bi bi-magic me-2 text-primary"></i>Fix experience writing style</h6>
+                    <p class="text-brand-muted small mb-3">
+                        Experience must be in first person (<strong>I / my</strong>), never third person (<strong>he / his / name is...</strong>).
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        @if (!string.IsNullOrEmpty(Model.ExistingCvFileName))
+                        {
+                            <form asp-action="FillFromCv" method="post">
+                                <button type="submit" class="btn btn-outline-custom text-nowrap">
+                                    <i class="bi bi-magic me-1"></i>Fill skills &amp; experience from CV
+                                </button>
+                            </form>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.ExperienceSummary))
+                        {
+                            <form asp-action="RewriteExperience" method="post">
+                                <button type="submit" class="btn btn-primary-gradient text-nowrap">
+                                    <i class="bi bi-pencil-square me-1"></i>Rewrite experience in first person
+                                </button>
+                            </form>
+                        }
+                    </div>
+                    <div class="form-text mt-2">Each action uses 1 AI analysis from your monthly quota (unless you have a personal Gemini key).</div>
+                </div>
+            </div>
+        }
+
+        <form asp-action="Index" method="post" enctype="multipart/form-data">
+            <div class="card card-main">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label fw-semibold"></label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Title" class="form-label fw-semibold"></label>
+                            <input asp-for="Title" class="form-control" placeholder="e.g. Software Developer" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label fw-semibold"></label>
+                            <input asp-for="Phone" class="form-control" placeholder="+1 555 555 5555" />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ContactEmail" class="form-label fw-semibold"></label>
+                            <input asp-for="ContactEmail" class="form-control" />
+                            <span asp-validation-for="ContactEmail" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="SkillsSummary" class="form-label fw-semibold"></label>
+                            <textarea asp-for="SkillsSummary" class="form-control" rows="2" placeholder="C#, .NET Core, ASP.NET, SQL Server, JavaScript..."></textarea>
+                            <span asp-validation-for="SkillsSummary" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="ExperienceSummary" class="form-label fw-semibold"></label>
+                            <textarea asp-for="ExperienceSummary" class="form-control" rows="4" placeholder="5+ years of experience in..."></textarea>
+                            <span asp-validation-for="ExperienceSummary" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-main mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-paperclip me-2"></i>CV Attachment</h5>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ExistingCvFileName))
+                    {
+                        var sizeBytes = Model.ExistingCvSizeBytes ?? 0;
+                        var sizeText = sizeBytes >= 1024 * 1024
+                            ? $"{sizeBytes / 1024.0 / 1024.0:0.##} MB"
+                            : $"{Math.Max(1, sizeBytes / 1024)} KB";
+                        var uploadedAt = Model.ExistingCvUploadedAt?.ToLocalTime().ToString("g") ?? "unknown";
+                        <p class="text-success mb-3">
+                            <i class="bi bi-check-circle me-1"></i>
+                            Current CV:
+                            <a asp-action="Cv" asp-route-v="@(Model.ExistingCvUploadedAt?.Ticks)" class="fw-semibold">
+                                <i class="bi bi-download me-1"></i>@Model.ExistingCvFileName
+                            </a>
+                            <span class="text-muted ms-1">(@sizeText · uploaded @uploadedAt)</span>
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-3"><i class="bi bi-info-circle me-1"></i>No CV on file. Upload one to auto-fill skills/experience and improve AI emails.</p>
+                    }
+                    <label asp-for="CvUpload" class="form-label fw-semibold"></label>
+                    <input asp-for="CvUpload" type="file" class="form-control" accept=".pdf,.doc,.docx" />
+                    <div class="form-text mb-3">Allowed: PDF, DOC, DOCX. Max 5 MB. Use <strong>Upload CV</strong> below to replace the file immediately, or include it when you click Save Profile.</div>
+                    <span asp-validation-for="CvUpload" class="text-danger small"></span>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" formaction="@Url.Action("UploadCv")" class="btn btn-primary-gradient btn-sm">
+                            <i class="bi bi-upload me-1"></i>Upload CV
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-main mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-envelope-at me-2"></i>Email Sending</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        Job and bulk CV emails are sent from <strong>your own</strong> Gmail account using a Gmail App Password
+                        (separate from the @AppBranding.Name address used for account confirmation and password reset).
+                        Do not use your normal Gmail password. To create one: enable 2-Step Verification,
+                        open <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">Google App Passwords</a>,
+                        create an app password for this app, then paste the 16-character password here.
+                    </p>
+
+                    @if (Model.HasEmailCredential)
+                    {
+                        <div class="alert alert-info">
+                            <i class="bi bi-shield-lock me-1"></i>
+                            An App Password is saved. Leave the password field empty to keep it, or enter a new one to replace it.
+                        </div>
+                    }
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="SenderEmail" class="form-label fw-semibold"></label>
+                            <input asp-for="SenderEmail" class="form-control" placeholder="you@gmail.com" />
+                            <span asp-validation-for="SenderEmail" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="SenderName" class="form-label fw-semibold"></label>
+                            <input asp-for="SenderName" class="form-control" placeholder="Your name as recruiters will see it" />
+                            <span asp-validation-for="SenderName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="SenderAppPassword" class="form-label fw-semibold"></label>
+                            <input asp-for="SenderAppPassword" class="form-control" autocomplete="off" placeholder="16-character Gmail App Password" />
+                            <div class="form-text">This secret is encrypted at rest and is used only to send emails from your Gmail account.</div>
+                            <span asp-validation-for="SenderAppPassword" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-bar action-bar-end mt-4">
+                <a asp-controller="Job" asp-action="Index" class="btn btn-outline-custom">
+                    <i class="bi bi-arrow-left me-1"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-primary-gradient btn-lg">
+                    <i class="bi bi-save me-2"></i>Save Profile
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -7,7 +7,7 @@ namespace JobApplicationBot.Services;
 public interface IJobScraperService
 {
     Task<string> ScrapeJobDescriptionAsync(string url);
-    Task<List<JobSearchResultItem>> SearchJobsAsync(string? title, string? experienceLevel, string? datePosted);
+    Task<List<JobSearchResultItem>> SearchJobsAsync(string? title, string? experienceLevel, string? datePosted, string? location = null);
 }
 
 public class JobScraperService : IJobScraperService
@@ -45,10 +45,11 @@ public class JobScraperService : IJobScraperService
     }
 
     public async Task<List<JobSearchResultItem>> SearchJobsAsync(
-        string? title, string? experienceLevel, string? datePosted)
+        string? title, string? experienceLevel, string? datePosted, string? location = null)
     {
-        var jobsTask = FetchLinkedInJobs(title, experienceLevel, datePosted);
-        var postsTask = FetchLinkedInPosts(title);
+        var resolvedLocation = string.IsNullOrWhiteSpace(location) ? DefaultLocation : location.Trim();
+        var jobsTask = FetchLinkedInJobs(title, experienceLevel, datePosted, resolvedLocation);
+        var postsTask = FetchLinkedInPosts(title, resolvedLocation);
 
         await Task.WhenAll(jobsTask, postsTask);
 
@@ -63,11 +64,11 @@ public class JobScraperService : IJobScraperService
     }
 
     private async Task<List<JobSearchResultItem>> FetchLinkedInJobs(
-        string? title, string? experienceLevel, string? datePosted)
+        string? title, string? experienceLevel, string? datePosted, string location)
     {
         var results = new List<JobSearchResultItem>();
         var encodedTitle = Uri.EscapeDataString(title?.Trim() ?? "");
-        var encodedLocation = Uri.EscapeDataString(DefaultLocation);
+        var encodedLocation = Uri.EscapeDataString(location);
 
         var url = $"https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords={encodedTitle}&location={encodedLocation}&start=0";
 
@@ -125,10 +126,10 @@ public class JobScraperService : IJobScraperService
         return results;
     }
 
-    private async Task<List<JobSearchResultItem>> FetchLinkedInPosts(string? title)
+    private async Task<List<JobSearchResultItem>> FetchLinkedInPosts(string? title, string location)
     {
         var results = new List<JobSearchResultItem>();
-        var query = $"site:linkedin.com/posts \"{title}\" Egypt hiring OR job OR وظيفة";
+        var query = $"site:linkedin.com/posts \"{title}\" {location} hiring OR job OR وظيفة";
         var encodedQuery = Uri.EscapeDataString(query);
         var url = $"https://html.duckduckgo.com/html/?q={encodedQuery}";
 
@@ -172,7 +173,7 @@ public class JobScraperService : IJobScraperService
             {
                 Title = CleanPostTitle(postTitle),
                 Company = author,
-                Location = "Egypt",
+                Location = location,
                 Url = postUrl,
                 Snippet = snippet.Length > 200 ? snippet[..200] + "..." : snippet,
                 ResultType = "Post"

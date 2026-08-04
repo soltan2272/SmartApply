@@ -1,31 +1,660 @@
+/* SmartApply Hub — design system */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+:root {
+    --brand-primary: #4f46e5;
+    --brand-secondary: #7c3aed;
+    --brand-accent: #06b6d4;
+    --brand-dark: #0f172a;
+    --brand-muted: #64748b;
+    --surface: #f1f5f9;
+    --surface-elevated: #ffffff;
+    --border-subtle: rgba(15, 23, 42, 0.08);
+    --gradient-start: var(--brand-primary);
+    --gradient-end: var(--brand-secondary);
+    --gradient-brand: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 4px 24px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 12px 40px rgba(79, 70, 229, 0.15);
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --nav-height: 64px;
+    --content-max: 1140px;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 html {
-  font-size: 14px;
+    font-size: 15px;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    background: var(--surface);
+    background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(79, 70, 229, 0.12), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 0%, rgba(124, 58, 237, 0.08), transparent);
+    font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--brand-dark);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+a {
+    color: var(--brand-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+a:hover {
+    color: var(--brand-secondary);
+}
+
+/* ── Navbar ── */
+.navbar-custom {
+    background: var(--gradient-brand);
+    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.25);
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+    min-height: var(--nav-height);
+}
+
+.navbar-custom .navbar-brand {
+    color: #fff !important;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    gap: 0.6rem;
+}
+
+.navbar-custom .brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.navbar-custom .brand-text {
+    line-height: 1.2;
+}
+
+.navbar-custom .brand-tagline {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 500;
+    opacity: 0.85;
+    letter-spacing: 0.02em;
+}
+
+@media (max-width: 575.98px) {
+    .navbar-custom .brand-tagline {
+        display: none;
+    }
+}
+
+.navbar-custom .nav-link {
+    color: rgba(255, 255, 255, 0.92) !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.85rem !important;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.navbar-custom .nav-link:hover,
+.navbar-custom .nav-link:focus {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.navbar-custom .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.45);
+    padding: 0.4rem 0.55rem;
+}
+
+.navbar-custom .navbar-toggler-icon {
+    filter: brightness(0) invert(1);
+}
+
+.navbar-custom .navbar-collapse {
+    margin-top: 0.5rem;
+}
+
+@media (min-width: 992px) {
+    .navbar-custom .navbar-collapse {
+        margin-top: 0;
+    }
+}
+
+.navbar-custom .nav-logout-btn {
+    color: rgba(255, 255, 255, 0.92) !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    width: 100%;
+    text-align: left;
+}
+
+@media (min-width: 992px) {
+    .navbar-custom .nav-logout-btn {
+        width: auto;
+    }
+}
+
+.navbar-custom .nav-logout-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff !important;
+}
+
+/* ── Layout ── */
+.main-content {
+    flex: 1;
+    padding: 1.5rem 0 2.5rem;
+}
+
+@media (min-width: 768px) {
+    .main-content {
+        padding: 2rem 0 3rem;
+    }
+}
+
+.container-app {
+    width: 100%;
+    max-width: var(--content-max);
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+/* ── Page hero ── */
+.page-hero {
+    text-align: center;
+    margin-bottom: 1.75rem;
+}
+
+.page-hero h1 {
+    font-weight: 800;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: var(--brand-dark);
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+}
+
+.page-hero h1 .hero-icon {
+    color: var(--brand-primary);
+}
+
+.page-hero .lead {
+    color: var(--brand-muted);
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+    max-width: 36rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ── Cards ── */
+.card-main {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    background: var(--surface-elevated);
+}
+
+.card-main .card-header {
+    background: var(--gradient-brand);
+    color: white;
+    border: none;
+    padding: 1.15rem 1.5rem;
+    font-weight: 700;
+}
+
+@media (max-width: 575.98px) {
+    .card-main .card-header {
+        padding: 1rem 1.15rem;
+    }
+}
+
+.card-main .card-body {
+    padding: 1.5rem;
+}
+
+@media (max-width: 575.98px) {
+    .card-main .card-body {
+        padding: 1.15rem;
+    }
+}
+
+.feature-tile {
+    padding: 1.15rem;
+    border-radius: var(--radius-md);
+    background: rgba(79, 70, 229, 0.05);
+    height: 100%;
+    border: 1px solid rgba(79, 70, 229, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.feature-tile i {
+    color: var(--brand-primary);
+    font-size: 1.75rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* ── Buttons ── */
+.btn-primary-gradient {
+    background: var(--gradient-brand);
+    border: none;
+    color: white;
+    padding: 0.7rem 1.5rem;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+    min-height: 44px;
+}
+
+.btn-primary-gradient:hover,
+.btn-primary-gradient:focus {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+    color: white;
+}
+
+.btn-outline-custom {
+    border: 2px solid var(--brand-primary);
+    color: var(--brand-primary);
+    padding: 0.65rem 1.5rem;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    transition: all 0.2s ease;
+    min-height: 44px;
+}
+
+.btn-outline-custom:hover,
+.btn-outline-custom:focus {
+    background: var(--brand-primary);
+    color: white;
+    border-color: var(--brand-primary);
+}
+
+/* ── Forms ── */
+.form-control,
+.form-select {
+    border-radius: var(--radius-sm);
+    border-color: var(--border-subtle);
+    padding: 0.65rem 0.9rem;
+}
+
+.form-control-lg,
+.form-select-lg {
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.18);
+}
+
+.form-label {
+    color: var(--brand-dark);
+    margin-bottom: 0.35rem;
+}
+
+/* ── Steps indicator ── */
+.steps-indicator {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+.steps-indicator .step-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.steps-indicator .step-item.inactive {
+    opacity: 0.45;
+}
+
+.step-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--gradient-brand);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+/* ── Footer ── */
+.footer-custom {
+    background: var(--brand-dark);
+    color: rgba(255, 255, 255, 0.65);
+    padding: 1.25rem 0;
+    margin-top: auto;
+    font-size: 0.875rem;
+}
+
+.footer-custom a {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.footer-custom a:hover {
+    color: #fff;
+}
+
+.footer-brand {
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+
+/* ── Loading overlay ── */
+.loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(241, 245, 249, 0.92);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.spinner-custom {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e2e8f0;
+    border-top-color: var(--brand-primary);
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Badges & skills ── */
+.skill-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.75rem;
+    background: rgba(79, 70, 229, 0.08);
+    color: var(--brand-primary);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0.15rem;
+}
+
+.badge-category {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.badge-job {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+}
+
+.badge-post {
+    background: rgba(236, 72, 153, 0.12);
+    color: #db2777;
+}
+
+/* ── Email preview ── */
+.email-preview-box {
+    background: #f8fafc;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    font-family: inherit;
+    white-space: pre-wrap;
+    line-height: 1.7;
+    font-size: 0.925rem;
+    overflow-x: auto;
+}
+
+/* ── Job cards ── */
+.job-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.job-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.min-width-0 {
+    min-width: 0;
+}
+
+.job-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+@media (min-width: 400px) {
+    .job-card-actions {
+        flex-direction: row;
+    }
+}
+
+/* ── Pagination ── */
+.pagination .page-link {
+    color: var(--brand-primary);
+    border-radius: var(--radius-sm);
+    margin: 0 2px;
+    border: none;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: center;
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--gradient-brand);
+    border: none;
+    color: #fff;
+}
+
+.pagination .page-link:hover {
+    background: rgba(79, 70, 229, 0.1);
+    color: var(--brand-primary);
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #94a3b8;
+    background: transparent;
+}
+
+/* ── Landing page ── */
+.landing-hero {
+    padding: 2rem 0 3rem;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .landing-hero {
+        padding: 3rem 0 4rem;
+    }
+}
+
+.landing-hero h1 {
+    font-weight: 800;
+    font-size: clamp(2rem, 6vw, 3rem);
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    color: var(--brand-dark);
+}
+
+.landing-hero .gradient-text {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.landing-hero .subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: var(--brand-muted);
+    max-width: 32rem;
+    margin: 0 auto 2rem;
+}
+
+.landing-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.landing-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-top: 2.5rem;
+}
+
+.landing-stat {
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-sm);
+}
+
+.landing-stat strong {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--brand-primary);
+}
+
+.landing-stat span {
+    font-size: 0.85rem;
+    color: var(--brand-muted);
+}
+
+/* ── Success icon ── */
+.success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.success-icon i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+/* ── Quota bar ── */
+.quota-bar-wrap {
+    min-width: 0;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .quota-bar-wrap {
+        width: auto;
+        min-width: 180px;
+    }
+}
+
+/* ── Action bar (back / submit) ── */
+.action-bar {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+}
+
+@media (min-width: 576px) {
+    .action-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .action-bar.action-bar-end {
+        justify-content: flex-end;
+    }
+}
+
+.action-bar .btn {
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .action-bar .btn {
+        width: auto;
+    }
+}
+
+/* ── Utilities ── */
+.text-brand-muted {
+    color: var(--brand-muted) !important;
+}
+
+.clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: var(--gradient-brand);
 }

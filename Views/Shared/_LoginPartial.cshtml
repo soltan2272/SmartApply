@@ -1,0 +1,67 @@
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav ms-lg-auto align-items-lg-center gap-lg-1">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Job" asp-action="Index">
+                <i class="bi bi-magic me-1"></i>Apply with AI
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Job" asp-action="Search">
+                <i class="bi bi-search me-1"></i>Search Jobs
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="BulkApply" asp-action="Index">
+                <i class="bi bi-send-check me-1"></i>Bulk Apply
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Application" asp-action="Index">
+                <i class="bi bi-kanban me-1"></i>Applications
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Billing" asp-action="Index">
+                <i class="bi bi-credit-card me-1"></i>Plans
+            </a>
+        </li>
+        @if (User.IsInRole("Admin"))
+        {
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admin" asp-action="Index">
+                    <i class="bi bi-shield-lock me-1"></i>Admin
+                </a>
+            </li>
+        }
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Profile" asp-action="Index">
+                <i class="bi bi-person-circle me-1"></i>Profile
+            </a>
+        </li>
+        <li class="nav-item">
+            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post" class="d-inline w-100">
+                <button type="submit" class="nav-link btn btn-link border-0 nav-logout-btn">
+                    <i class="bi bi-box-arrow-right me-1"></i>Logout
+                </button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
+                <i class="bi bi-box-arrow-in-right me-1"></i>Login
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link btn btn-light btn-sm ms-lg-2 mt-2 mt-lg-0 px-3 fw-bold" asp-area="Identity" asp-page="/Account/Register"
+               style="color: var(--brand-primary) !important; border-radius: var(--radius-sm);">
+                Get Started
+            </a>
+        </li>
+    }
+</ul>

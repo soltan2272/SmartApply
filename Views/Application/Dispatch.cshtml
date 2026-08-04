@@ -1,0 +1,38 @@
+@model JobApplicationBot.Data.Entities.BulkEmailDispatch
+@{
+    ViewData["Title"] = "Bulk Queue Status";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-main">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Bulk Queue Status</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-1"><strong>Dispatch ID:</strong> #@Model.Id</p>
+                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-primary">@Model.Status</span></p>
+                <p class="mb-1"><strong>Total recipients:</strong> @Model.TotalRecipients</p>
+                <p class="mb-1"><strong>Sent:</strong> @Model.SentCount</p>
+                <p class="mb-3"><strong>Failed:</strong> @Model.FailedCount</p>
+
+                @if (Model.Status == JobApplicationBot.Data.Entities.BulkEmailDispatchStatus.Queued || Model.Status == JobApplicationBot.Data.Entities.BulkEmailDispatchStatus.Processing)
+                {
+                    <div class="alert alert-info mb-3">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Your emails are being processed in the background. This page can be refreshed to see updated progress.
+                    </div>
+                }
+
+                <div class="d-flex gap-2">
+                    <a asp-action="Dispatch" asp-route-id="@Model.Id" class="btn btn-outline-custom">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                    </a>
+                    <a asp-action="Index" class="btn btn-primary-gradient">
+                        <i class="bi bi-kanban me-1"></i>Open Applications Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

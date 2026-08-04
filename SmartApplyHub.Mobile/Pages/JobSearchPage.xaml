@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SmartApplyHub.Mobile.ViewModels"
+             x:Class="SmartApplyHub.Mobile.Pages.JobSearchPage"
+             x:DataType="vm:JobSearchViewModel"
+             Title="Search Jobs">
+
+    <Grid RowDefinitions="Auto,*" Padding="16" RowSpacing="12">
+
+        <!-- Search Form -->
+        <VerticalStackLayout Spacing="10" Grid.Row="0">
+            <Entry Placeholder="Job Title (e.g. .NET Developer)" Text="{Binding Title}" />
+            <Entry Placeholder="Location (default: Egypt)" Text="{Binding Location}" />
+            <Button Text="Search" Command="{Binding SearchCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+            <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}" />
+        </VerticalStackLayout>
+
+        <!-- Results -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Results}">
+            <CollectionView.EmptyView>
+                <Label Text="No results yet. Search for jobs above."
+                       HorizontalOptions="Center" VerticalOptions="Center"
+                       TextColor="{StaticResource DarkGray}" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:JobSearchViewModel">
+                    <!-- Using the shared DTO type directly isn't possible in DataTemplate, so we bind loosely -->
+                    <Frame Padding="12" Margin="0,4" CornerRadius="8" HasShadow="True" BackgroundColor="White">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:JobSearchViewModel}}, Path=SelectJobCommand}"
+                                CommandParameter="{Binding}" />
+                        </Frame.GestureRecognizers>
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" />
+                            <Label Text="{Binding Company}" TextColor="{StaticResource Primary}" />
+                            <Label Text="{Binding Location}" TextColor="{StaticResource DarkGray}" FontSize="12" />
+                            <Label Text="{Binding DatePosted}" TextColor="{StaticResource DarkGray}" FontSize="11" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

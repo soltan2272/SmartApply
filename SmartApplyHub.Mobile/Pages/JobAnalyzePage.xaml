@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SmartApplyHub.Mobile.ViewModels"
+             x:Class="SmartApplyHub.Mobile.Pages.JobAnalyzePage"
+             x:DataType="vm:JobAnalyzeViewModel"
+             Title="Analyze Job">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="14">
+
+            <Entry Placeholder="Job URL" Text="{Binding JobUrl}" />
+
+            <Label Text="— or paste description below —"
+                   HorizontalOptions="Center" TextColor="{StaticResource DarkGray}" FontSize="12" />
+
+            <Editor Placeholder="Paste job description here..."
+                    Text="{Binding JobDescription}" HeightRequest="120"
+                    AutoSize="TextChanges" />
+
+            <Button Text="Analyze with AI" Command="{Binding AnalyzeCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+
+            <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}" />
+
+            <Label Text="{Binding SuccessMessage}" TextColor="{StaticResource Success}"
+                   IsVisible="{Binding SuccessMessage, Converter={StaticResource StringToBoolConverter}}" />
+
+            <!-- Email Preview (shown after analysis) -->
+            <Frame Padding="16" CornerRadius="12" HasShadow="True" BackgroundColor="White"
+                   IsVisible="{Binding IsAnalyzed}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Email Preview" FontSize="20" FontAttributes="Bold" />
+
+                    <Label Text="{Binding EmailPreview.MatchScore, StringFormat='Match Score: {0}%'}"
+                           FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+
+                    <Label Text="{Binding EmailPreview.JobTitle, StringFormat='Job: {0}'}" />
+                    <Label Text="{Binding EmailPreview.CompanyName, StringFormat='Company: {0}'}" />
+
+                    <Label Text="To:" FontAttributes="Bold" />
+                    <Label Text="{Binding EmailPreview.ToEmail}" />
+
+                    <Label Text="Subject:" FontAttributes="Bold" />
+                    <Label Text="{Binding EmailPreview.Subject}" />
+
+                    <Label Text="Body:" FontAttributes="Bold" />
+                    <Label Text="{Binding EmailPreview.Body}" FontSize="13" />
+
+                    <Button Text="Send Email"
+                            Command="{Binding SendEmailCommand}"
+                            BackgroundColor="{StaticResource Success}" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

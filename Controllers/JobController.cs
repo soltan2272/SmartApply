@@ -1,31 +1,68 @@
+using System.Security.Claims;
+using JobApplicationBot.Data.Entities;
+using JobApplicationBot.Data.Repositories;
 using JobApplicationBot.Models;
 using JobApplicationBot.Services;
+using JobApplicationBot.Services.Quota;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 
 namespace JobApplicationBot.Controllers;
 
+[Authorize]
 public class JobController : Controller
 {
     private readonly IJobScraperService _scraper;
     private readonly IAiService _ai;
     private readonly IEmailSenderService _emailSender;
-    private readonly UserProfile _userProfile;
+    private readonly IUserProfileRepository _profiles;
+    private readonly IUserCvFileRepository _cvFiles;
+    private readonly IUserEmailCredentialRepository _emailCredentials;
+    private readonly IAiQuotaService _quota;
     private readonly IMemoryCache _cache;
+    private readonly IApplicationTrackingService _tracking;
+    private readonly ICvTextExtractionService _cvText;
 
     public JobController(
         IJobScraperService scraper,
         IAiService ai,
         IEmailSenderService emailSender,
-        IOptions<UserProfile> userProfile,
-        IMemoryCache cache)
+        IUserProfileRepository profiles,
+        IUserCvFileRepository cvFiles,
+        IUserEmailCredentialRepository emailCredentials,
+        IAiQuotaService quota,
+        IMemoryCache cache,
+        IApplicationTrackingService tracking,
+        ICvTextExtractionService cvText)
     {
         _scraper = scraper;
         _ai = ai;
         _emailSender = emailSender;
-        _userProfile = userProfile.Value;
+        _profiles = profiles;
+        _cvFiles = cvFiles;
+        _emailCredentials = emailCredentials;
+        _quota = quota;
         _cache = cache;
+        _tracking = tracking;
+        _cvText = cvText;
+    }
+
+    private string? CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    private async Task<UserProfile?> GetOrPromptProfileAsync(CancellationToken ct = default)
+    {
+        var userId = CurrentUserId;
+        if (string.IsNullOrEmpty(userId)) return null;
+
+        var profile = await _profiles.GetByUserIdAsync(userId, ct);
+        if (profile == null || string.IsNullOrWhiteSpace(profile.FullName))
+        {
+            TempData["ProfileIncomplete"] = "Please complete your profile before generating applications.";
+            return null;
+        }
+
+        return profile;
     }
 
     [HttpGet]
@@ -35,11 +72,25 @@ public class JobController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Analyze(JobInput input)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Analyze(JobInput input, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(input.JobUrl) && string.IsNullOrWhiteSpace(input.JobDescription))
         {
             ModelState.AddModelError("", "Please provide either a job URL or description.");
+            return View("Index", input);
+        }
+
+        var profile = await GetOrPromptProfileAsync(ct);
+        if (profile == null)
+            return RedirectToAction("Index", "Profile");
+
+        var quota = await _quota.TryConsumeAsync(profile.UserId, ct);
+        if (!quota.Allowed)
+        {
+            ModelState.AddModelError(
+                "",
+                $"You've used your {quota.Limit} AI analyses this month. Request more tokens or a plan upgrade from Billing.");
             return View("Index", input);
         }
 
@@ -58,8 +109,24 @@ public class JobController : Controller
                 return View("Index", input);
             }
 
-            var analysis = await _ai.AnalyzeJobAsync(description);
-            var emailPreview = await _ai.GenerateEmailAsync(analysis, _userProfile);
+            var analysis = await _ai.AnalyzeJobAsync(description, null, ct);
+
+            string? cvText = null;
+            var cv = await _cvFiles.GetAsync(profile.UserId, ct);
+            if (cv != null && cv.Content.Length > 0)
+            {
+                try
+                {
+                    cvText = _cvText.ExtractText(cv.Content, cv.FileName, cv.ContentType);
+                }
+                catch
+                {
+                    cvText = null;
+                }
+            }
+
+            var emailPreview = await _ai.GenerateEmailAsync(analysis, profile, null, cvText, ct);
+            emailPreview.HasCvOnFile = cv != null;
 
             TempData["Success"] = null;
             return View("Preview", emailPreview);
@@ -72,15 +139,47 @@ public class JobController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Send(EmailPreviewModel model)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Send(EmailPreviewModel model, CancellationToken ct)
     {
         if (!ModelState.IsValid)
             return View("Preview", model);
 
+        var profile = await GetOrPromptProfileAsync(ct);
+        if (profile == null)
+            return RedirectToAction("Index", "Profile");
+
+        var credential = await _emailCredentials.GetByUserIdAsync(profile.UserId, ct);
+        if (credential == null || string.IsNullOrWhiteSpace(credential.Secret))
+        {
+            ModelState.AddModelError(
+                "",
+                "Save your Gmail App Password on the Profile page before sending applications. Emails are sent from your Gmail account.");
+            return View("Preview", model);
+        }
+
         try
         {
-            var cvPath = string.IsNullOrEmpty(model.CvPath) ? _userProfile.CvFilePath : model.CvPath;
-            await _emailSender.SendEmailAsync(model.ToEmail, model.Subject, model.Body, cvPath);
+            EmailAttachment? attachment = null;
+            var cv = await _cvFiles.GetAsync(profile.UserId, ct);
+            if (cv != null && cv.Content.Length > 0)
+            {
+                attachment = new EmailAttachment(cv.FileName, cv.ContentType, cv.Content);
+            }
+
+            var sender = new EmailSenderAccount(
+                credential.SenderEmail,
+                string.IsNullOrWhiteSpace(credential.SenderName) ? profile.FullName : credential.SenderName,
+                credential.Secret!,
+                credential.SmtpHost,
+                credential.SmtpPort,
+                credential.UseStartTls);
+
+            await _emailSender.SendEmailAsync(sender, model.ToEmail, model.Subject, model.Body, attachment);
+            if (!string.IsNullOrWhiteSpace(CurrentUserId))
+            {
+                await _tracking.RecordSingleSendAsync(CurrentUserId!, model, ct);
+            }
 
             TempData["RecipientEmail"] = model.ToEmail;
             TempData["JobTitle"] = model.JobTitle;
@@ -109,13 +208,20 @@ public class JobController : Controller
             return View(cached);
         }
 
-        return View(new JobSearchViewModel());
+        return View(new JobSearchViewModel
+        {
+            Filter = new JobSearchFilter { Location = "Egypt" }
+        });
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Search(JobSearchFilter filter)
     {
-        var searchId = Guid.NewGuid().ToString("N");
+        if (string.IsNullOrWhiteSpace(filter.Location))
+            filter.Location = "Egypt";
+
+        var searchId = $"{CurrentUserId}:{Guid.NewGuid():N}";
         var viewModel = new JobSearchViewModel
         {
             SearchId = searchId,
@@ -134,7 +240,8 @@ public class JobController : Controller
             viewModel.Results = await _scraper.SearchJobsAsync(
                 filter.Title,
                 filter.ExperienceLevel,
-                filter.DatePosted);
+                filter.DatePosted,
+                filter.Location);
         }
         catch (Exception ex)
         {

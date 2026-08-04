@@ -20,5 +20,14 @@ public class EmailPreviewModel
     public string JobTitle { get; set; } = string.Empty;
     public string CompanyName { get; set; } = string.Empty;
     public List<string> MatchedSkills { get; set; } = [];
-    public string CvPath { get; set; } = string.Empty;
+
+    /// <summary>0–100 skills fit score vs the job description.</summary>
+    [Range(0, 100)]
+    public int MatchScore { get; set; }
+
+    /// <summary>
+    /// Set by the controller (not bound from the form) to indicate whether the current
+    /// user has a CV stored in the database; used by the Preview view for display only.
+    /// </summary>
+    public bool HasCvOnFile { get; set; }
 }

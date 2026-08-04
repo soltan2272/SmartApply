@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Terms of Service";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="page-hero">
+            <h1>
+                <i class="bi bi-file-text hero-icon me-2"></i>
+                @ViewData["Title"]
+            </h1>
+            <p class="lead">Rules for using @AppBranding.Name</p>
+        </div>
+
+        <div class="card card-main">
+            <div class="card-body">
+                <h5 class="fw-semibold">1. Service</h5>
+                <p class="text-brand-muted">
+                    @AppBranding.Name helps you discover roles, generate application emails with AI, and send them from
+                    <strong>your own Gmail account</strong>. Job search results are best-effort and may be incomplete or unavailable.
+                </p>
+
+                <h5 class="fw-semibold">2. Your responsibilities</h5>
+                <ul class="text-brand-muted">
+                    <li>You are solely responsible for emails sent through your Gmail App Password.</li>
+                    <li>Do not use the service to spam, harass, or violate employer or job-board terms.</li>
+                    <li>You must have rights to upload any CV or content you provide.</li>
+                </ul>
+
+                <h5 class="fw-semibold">3. AI content</h5>
+                <p class="text-brand-muted">
+                    AI-generated text may contain mistakes. Review every email before sending. Shared AI usage is limited by your subscription plan;
+                    you may supply your own Gemini API key to bypass shared-key quotas.
+                </p>
+
+                <h5 class="fw-semibold">4. Accounts &amp; billing</h5>
+                <p class="text-brand-muted">
+                    Free and paid plans enforce AI and bulk-send limits. Paid subscriptions are processed by Stripe when configured.
+                    We may suspend accounts that abuse rate limits or send harmful bulk mail.
+                </p>
+
+                <h5 class="fw-semibold mb-0">5. Disclaimer</h5>
+                <p class="text-brand-muted mb-0">
+                    The service is provided as-is without guarantees of job outcomes, deliverability, or uninterrupted availability of third-party sites (LinkedIn, Gmail, Gemini).
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

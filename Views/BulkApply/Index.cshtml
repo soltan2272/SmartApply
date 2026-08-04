@@ -1,0 +1,246 @@
+@model JobApplicationBot.Models.BulkApplyViewModel
+@{
+    ViewData["Title"] = "Bulk Apply";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="page-hero">
+            <h1>
+                <i class="bi bi-send-check hero-icon me-2"></i>
+                Bulk Apply
+            </h1>
+            <p class="lead">Paste a hiring description with many emails — or type recipients — then queue applications from your Gmail.</p>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+        }
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+                <div class="card card-main h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold"><i class="bi bi-person-badge me-2 text-primary"></i>Profile</h6>
+                        @if (Model.HasCompleteProfile)
+                        {
+                            <p class="text-success mb-0"><i class="bi bi-check-circle me-1"></i>Ready</p>
+                        }
+                        else
+                        {
+                            <p class="text-warning mb-0"><i class="bi bi-exclamation-circle me-1"></i><a asp-controller="Profile" asp-action="Index">Complete profile</a></p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card card-main h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold"><i class="bi bi-paperclip me-2 text-primary"></i>CV Attachment</h6>
+                        @if (Model.HasCvOnFile)
+                        {
+                            <p class="text-success mb-0"><i class="bi bi-check-circle me-1"></i>@Model.CvFileName will be attached</p>
+                        }
+                        else
+                        {
+                            <p class="text-warning mb-0"><i class="bi bi-exclamation-circle me-1"></i><a asp-controller="Profile" asp-action="Index">Upload CV</a></p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card card-main h-100">
+                    <div class="card-body">
+                        <h6 class="fw-bold"><i class="bi bi-envelope-at me-2 text-primary"></i>Email Sender</h6>
+                        @if (Model.HasEmailCredential)
+                        {
+                            <p class="text-success mb-0"><i class="bi bi-check-circle me-1"></i>Gmail App Password saved</p>
+                        }
+                        else
+                        {
+                            <p class="text-warning mb-0"><i class="bi bi-exclamation-circle me-1"></i><a asp-controller="Profile" asp-action="Index">Add sender settings</a></p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (TempData["BulkExtractSuccess"] is string extractSuccess)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i>@extractSuccess
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["BulkTemplateSaved"] is string templateSaved)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-bookmark-check me-2"></i>@templateSaved
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (Model.LastDispatchId is int dispatchId)
+        {
+            <div class="card card-main mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Latest Bulk Queue</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Dispatch #@dispatchId</strong> - @Model.LastDispatchStatus</p>
+                    <p class="mb-2 text-muted small">Recipients: @Model.LastDispatchTotalRecipients | Sent: @Model.LastDispatchSentCount | Failed: @Model.LastDispatchFailedCount</p>
+                    <a asp-controller="Application" asp-action="Dispatch" asp-route-id="@dispatchId" class="btn btn-sm btn-outline-custom">
+                        Open queue status
+                    </a>
+                </div>
+            </div>
+        }
+
+        <form asp-action="Send" method="post" id="bulkForm">
+            <div class="card card-main mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-file-text me-2"></i>Paste description with emails</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        Paste a job post, hiring note, or any text that contains recruiter emails.
+                        The app extracts every valid email and fills the recipient list for you.
+                    </p>
+                    <div class="mb-3">
+                        <label asp-for="SourceText" class="form-label fw-semibold"></label>
+                        <textarea asp-for="SourceText" class="form-control" rows="6"
+                                  placeholder="Paste text here...&#10;&#10;Example:&#10;We are hiring. Contact hr@company.com or careers@company.com"></textarea>
+                        <span asp-validation-for="SourceText" class="text-danger small"></span>
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <button type="submit" formaction="@Url.Action("ExtractEmails")" class="btn btn-outline-custom">
+                            <i class="bi bi-magic me-1"></i>Extract emails from text
+                        </button>
+                        @if (Model.ExtractedEmailCount > 0)
+                        {
+                            <span class="badge bg-success">
+                                <i class="bi bi-envelope-check me-1"></i>@Model.ExtractedEmailCount extracted
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-main">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0"><i class="bi bi-people me-2"></i>Recipients</h5>
+                    <button type="button" class="btn btn-light btn-sm" id="addRecipient">
+                        <i class="bi bi-plus-lg me-1"></i>Add recipient
+                    </button>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small">
+                        Add up to @JobApplicationBot.Models.BulkApplyViewModel.MaxRecipients unique recipient emails.
+                        You can type them manually or extract them from a pasted description above.
+                    </p>
+                    <div id="recipientList">
+                        @for (var i = 0; i < Model.RecipientEmails.Count; i++)
+                        {
+                            <div class="input-group mb-2 recipient-row">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input class="form-control" name="RecipientEmails[@i]" value="@Model.RecipientEmails[i]" placeholder="recruiter@example.com" />
+                                <button type="button" class="btn btn-outline-danger remove-recipient" title="Remove">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-main mt-4">
+                <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h5 class="mb-0"><i class="bi bi-envelope-paper me-2"></i>Email Template</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        @if (Model.HasSavedTemplate)
+                        {
+                            <span class="badge bg-success align-self-center">
+                                <i class="bi bi-bookmark-check me-1"></i>Saved template loaded
+                            </span>
+                        }
+                        <button type="submit" formaction="@Url.Action("SaveTemplate")" class="btn btn-primary-gradient btn-sm">
+                            <i class="bi bi-save me-1"></i>Save template
+                        </button>
+                        @if (Model.HasSavedTemplate)
+                        {
+                            <button type="submit" formaction="@Url.Action("ResetTemplate")" class="btn btn-outline-secondary btn-sm"
+                                    onclick="return confirm('Reset to the default template from your profile?');">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i>Reset to default
+                            </button>
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        Edit the subject and body below. Click <strong>Save template</strong> to keep them for next time,
+                        or queue applications with your current edits.
+                    </p>
+                    <div class="mb-3">
+                        <label asp-for="Subject" class="form-label fw-semibold"></label>
+                        <input asp-for="Subject" class="form-control" placeholder="Senior Full Stack Developer" />
+                        <span asp-validation-for="Subject" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Body" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Body" class="form-control" rows="12" placeholder="Write the email body that all recipients will receive..."></textarea>
+                        <span asp-validation-for="Body" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-primary-gradient btn-lg">
+                    <i class="bi bi-send me-2"></i>Queue Bulk Applications
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const recipientList = document.getElementById('recipientList');
+        const addRecipient = document.getElementById('addRecipient');
+
+        function reindexRecipients() {
+            recipientList.querySelectorAll('.recipient-row input').forEach((input, index) => {
+                input.name = `RecipientEmails[${index}]`;
+            });
+        }
+
+        function bindRemoveButtons() {
+            recipientList.querySelectorAll('.remove-recipient').forEach(button => {
+                button.onclick = () => {
+                    if (recipientList.querySelectorAll('.recipient-row').length > 1) {
+                        button.closest('.recipient-row').remove();
+                        reindexRecipients();
+                    }
+                };
+            });
+        }
+
+        addRecipient.addEventListener('click', () => {
+            const index = recipientList.querySelectorAll('.recipient-row').length;
+            const row = document.createElement('div');
+            row.className = 'input-group mb-2 recipient-row';
+            row.innerHTML = `
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input class="form-control" name="RecipientEmails[${index}]" placeholder="recruiter@example.com" />
+                <button type="button" class="btn btn-outline-danger remove-recipient" title="Remove">
+                    <i class="bi bi-trash"></i>
+                </button>`;
+            recipientList.appendChild(row);
+            bindRemoveButtons();
+        });
+
+        bindRemoveButtons();
+    </script>
+}
