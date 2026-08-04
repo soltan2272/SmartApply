@@ -1,5 +1,6 @@
 using SmartApplyHub.Mobile.Pages;
 using SmartApplyHub.Mobile.Services;
+using SmartApplyHub.Mobile.ViewModels;
 
 namespace SmartApplyHub.Mobile;
 
