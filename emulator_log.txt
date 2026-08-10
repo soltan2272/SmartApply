@@ -1,0 +1,230 @@
+INFO    | Android emulator version 35.2.10.0 (build_id 12414864) (CL:N/A)
+INFO    | Graphics backend: gfxstream
+INFO    | Found systemPath C:\Program Files (x86)\Android\android-sdk\system-images\android-35\google_apis_playstore\x86_64\
+INFO    | Duplicate loglines will be removed, if you wish to see each individual line launch with the -log-nofilter flag.
+INFO    | Changing default hw.initialOrientation to portrait
+
+INFO    | Increasing RAM size to 2048MB
+INFO    | IPv4 server found: 192.168.1.1
+INFO    | Ignore IPv6 address: 3007:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: 3007:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: a00f:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: a00f:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: a00f:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: b815:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: b815:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: b815:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: d01b:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: d01b:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: d01b:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: d821:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: d821:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: d821:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: e827:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: e827:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: e827:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: 82e:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: 82e:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: 82e:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: f033:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: f033:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Ignore IPv6 address: f033:7e9c:5902:0:7001:7e9c:5902:0
+INFO    | Critical: 
+INFO    | Warning: 
+INFO    | Warning: 
+INFO    | Warning: 
+INFO    | Warning: 
+INFO    | Warning: 
+INFO    | Warning: 
+INFO    | Warning: 
+INFO    | Storing crashdata in: C:\Users\SOLTAN~1\AppData\Local\Temp\\AndroidEmulator\emu-crash-35.2.10.db, detection is enabled for process: 30176
+library_mode host gpu mode host
+INFO    | emuglConfig_get_vulkan_hardware_gpu: Using gpu 'NVIDIA GeForce MX250' for vulkan support
+
+INFO    | Initializing hardware OpenGLES emulation support
+android_startOpenglesRenderer: gpu infoGPU #1
+  Make: 10de
+  Model: NVIDIA GeForce MX250
+  Device ID: 1d13
+I0808 17:40:28.884195    9492 HealthMonitor.cpp:279] HealthMonitor disabled.
+I0808 17:40:28.885952    9492 VulkanDispatch.cpp:137] Added library: vulkan-1.dll
+W0808 17:40:29.066480    9492 VkCommonOperations.cpp:1169] Selecting Vulkan device: NVIDIA GeForce MX250, Version: 1.4.312
+I0808 17:40:29.712834    9492 VkCommonOperations.cpp:1531] Initializing VkEmulation features:
+I0808 17:40:29.712861    9492 VkCommonOperations.cpp:1532]     glInteropSupported: true
+I0808 17:40:29.712870    9492 VkCommonOperations.cpp:1533]     useDeferredCommands: true
+I0808 17:40:29.712876    9492 VkCommonOperations.cpp:1535]     createResourceWithRequirements: true
+I0808 17:40:29.712883    9492 VkCommonOperations.cpp:1536]     useVulkanComposition: false
+I0808 17:40:29.712889    9492 VkCommonOperations.cpp:1537]     useVulkanNativeSwapchain: false
+I0808 17:40:29.712897    9492 VkCommonOperations.cpp:1538]     enable guestRenderDoc: false
+I0808 17:40:29.712904    9492 VkCommonOperations.cpp:1539]     ASTC LDR emulation mode: 2
+I0808 17:40:29.712911    9492 VkCommonOperations.cpp:1540]     enable ETC2 emulation: true
+I0808 17:40:29.712917    9492 VkCommonOperations.cpp:1541]     enable Ycbcr emulation: false
+I0808 17:40:29.712923    9492 VkCommonOperations.cpp:1542]     guestVulkanOnly: false
+I0808 17:40:29.712929    9492 VkCommonOperations.cpp:1543]     useDedicatedAllocations: false
+I0808 17:40:29.720395    9492 FrameBuffer.cpp:522] Graphics Adapter Vendor Google (NVIDIA Corporation)
+I0808 17:40:29.720520    9492 FrameBuffer.cpp:523] Graphics Adapter Android Emulator OpenGL ES Translator (NVIDIA GeForce MX250/PCIe/SSE2)
+I0808 17:40:29.720531    9492 FrameBuffer.cpp:524] Graphics API Version OpenGL ES 3.0 (4.5.0 NVIDIA 582.42)
+I0808 17:40:29.721925    9492 FrameBuffer.cpp:525] Graphics API Extensions GL_OES_EGL_sync GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_depth24 GL_OES_depth32 GL_OES_element_index_uint GL_OES_texture_float GL_OES_texture_float_linear GL_OES_compressed_paletted_texture GL_OES_compressed_ETC1_RGB8_texture GL_OES_depth_texture GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_packed_depth_stencil GL_OES_vertex_half_float GL_OES_texture_npot GL_OES_rgb8_rgba8 GL_OVR_multiview2 GL_EXT_multiview_texture_multisample GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_texture_format_BGRA8888 GL_APPLE_texture_format_BGRA8888 GL_EXT_texture_buffer 
+I0808 17:40:29.721953    9492 FrameBuffer.cpp:526] Graphics Device Extensions N/A
+INFO    | Sending adb public key [QAAAAGtPmwK9mrAkR8zLr2XsvEIY8uXpMdJxF62N/nLxMoki/PNYMldJwGlAgwpT9XpYLvit4a1oGyVPmaNtEJxv4plXIa8NTFRXBii7HinnZV1wLsVxGKYIC+9X3DGdLm5cyJGR1aEqtgU/5Sh4uiS6e1iWDj9AiTSUMuluGqmBSM0jN8q+AmsRLhP4pjooQ5KlzT3ryfatsOHimZhss04O/XpYvdKgCfyg3rPG/6c2+f5edjeoabpm4XJa1/ffIgDH+eN/BfrHJ/E5UyTIynjfXYc0SVt3ESHC48j8yOJFb6Y3Te/YisjBsgARDbpyDeWLV0b4ffcjJujTM0TLHixcnmr78SrNxY0X/vMf+XaUSOlm2ERkPBkkL6a2y75wxeHxPJZVKoBibxVuyPVgLuMjz0EuTi/7jHgfL1TuQBJ3ABmhJHxFdol3p2VQ89Rf7PEWM8PYVLtYE64dier7vE8K2O619UsyE+WW2FlBsGkzP+AeV0K9TiEGD/Tyac9nEIatudDms2k8MjpV5N3zuXdOAw/1F/sBlafL/N/kMZ+zV8J4XO8JyvWoSScaM4UTSx/qvgfRtgw721QU6bImL6XauEoKOZDzjpMivF+BFaBOo2Digp3XtXM3pnXI3fz5T1O1xDRQV89A2SpHxHODXljIKlN8PJNQbmScs9BvarYyHyfo/zmrBgEAAQA= @unknown]
+WHPX on Windows 10.0.26200 detected.
+Windows Hypervisor Platform accelerator is operational
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 0]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 2]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 3]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 4]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 5]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 6]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 7]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 8]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 9]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 13]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 15]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 16]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 23]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 24]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 0]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 2]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 3]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 4]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 5]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 6]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 7]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 8]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 9]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 13]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 15]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 16]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 23]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 24]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 0]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 2]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 3]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 4]
+INFO    | Activated packet streamer for bluetooth emulation
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 5]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 6]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 7]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 8]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 9]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 13]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 15]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 16]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 23]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 24]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 0]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 2]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 3]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 4]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 5]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 6]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 7]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 8]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 9]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 13]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 15]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 16]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 23]
+host doesn't support requested feature: CPUID.80000001H:EDX [bit 24]
+INFO    | Monitoring duration of emulator setup.
+WARNING | The emulator now requires a signed jwt token for gRPC access! Use the -grpc flag if you really want an open unprotected grpc port
+INFO    | Using security allow list from: C:\Program Files (x86)\Android\android-sdk\emulator\lib\emulator_access.json
+WARNING | *** Basic token auth should only be used by android-studio ***
+INFO    | The active JSON Web Key Sets can be found here: C:\Users\SoltanSalahAbdelhame\AppData\Local\Temp\avd\running\30176\jwks\f18b2440-38c9-4bb2-8e2d-037aa3c8edb1\active.jwk
+INFO    | Scanning C:\Users\SoltanSalahAbdelhame\AppData\Local\Temp\avd\running\30176\jwks\f18b2440-38c9-4bb2-8e2d-037aa3c8edb1 for jwk keys.
+INFO    | Started GRPC server at 127.0.0.1:8554, security: Local, auth: +token
+INFO    | Advertising in: C:\Users\SoltanSalahAbdelhame\AppData\Local\Temp\avd\running\pid_30176.ini
+INFO    | Qemu slirp is disabled.
+I0808 17:40:35.570647   13728 FrameBuffer.cpp:2894] Setting display: 0 configuration to: 1080x2400, dpi: 420x420 
+I0808 17:40:35.632098   13728 FrameBuffer.cpp:2907] setDisplayActiveConfig 0
+##############################################################################
+##                        WARNING - ACTION REQUIRED                         ##
+##  Consider using the '-metrics-collection' flag to help improve the       ##
+##  emulator by sending anonymized usage data. Or use the '-no-metrics'     ##
+##  flag to bypass this warning and turn off the metrics collection.        ##
+##  In a future release this warning will turn into a one-time blocking     ##
+##  prompt to ask for explicit user input regarding metrics collection.     ##
+##                                                                          ##
+##  Please see '-help-metrics-collection' for more details. You can use     ##
+##  '-metrics-to-file' or '-metrics-to-console' flags to see what type of   ##
+##  data is being collected by emulator as part of usage statistics.        ##
+##############################################################################
+INFO    | Critical: 
+INFO    | Boot completed in 161174 ms
+INFO    | Increasing screen off timeout, logcat buffer size to 2M.
+INFO    | IPv4 server found: 192.168.1.1
+INFO    | Ignore IPv6 address: e03e:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: e03e:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 5047:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 5047:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 5047:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 684d:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 684d:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 684d:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8053:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8053:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8053:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8859:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8859:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8859:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 985f:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 985f:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 985f:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: b865:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: b865:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: b865:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: a06b:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: a06b:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: a06b:b140:5a02:0:2039:b140:5a02:0
+INFO    | IPv4 server found: 192.168.1.1
+INFO    | Ignore IPv6 address: e03e:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: e03e:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 5047:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 5047:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 5047:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 684d:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 684d:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 684d:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8053:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8053:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8053:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8859:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8859:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8859:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 985f:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 985f:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 985f:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: b865:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: b865:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: b865:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: a06b:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: a06b:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: a06b:b140:5a02:0:2039:b140:5a02:0
+INFO    | IPv4 server found: 192.168.1.1
+INFO    | Ignore IPv6 address: e03e:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: e03e:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 5047:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 5047:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 5047:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 684d:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 684d:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 684d:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8053:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8053:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8053:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8859:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8859:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 8859:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 985f:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 985f:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: 985f:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: b865:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: b865:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: b865:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: a06b:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: a06b:b140:5a02:0:2039:b140:5a02:0
+INFO    | Ignore IPv6 address: a06b:b140:5a02:0:2039:b140:5a02:0
+INFO    | Critical: 
+INFO    | Wait for emulator (pid 30176) 20 seconds to shutdown gracefully before kill;you can set environment variable ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL(in seconds) to change the default value (20 seconds)
+
+INFO    | Saving with gfxstream=1

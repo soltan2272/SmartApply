@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace JobApplicationBot.Controllers.Api;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/jobs")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class JobsApiController : ControllerBase
 {

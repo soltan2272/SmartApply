@@ -16,18 +16,14 @@ public class ApiService
     public async Task<AuthResponse?> LoginAsync(LoginRequest request)
     {
         var response = await _http.PostAsJsonAsync("api/auth/login", request);
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessAsync(response);
         return await response.Content.ReadFromJsonAsync<AuthResponse>();
     }
 
     public async Task RegisterAsync(RegisterRequest request)
     {
         var response = await _http.PostAsJsonAsync("api/auth/register", request);
-        if (!response.IsSuccessStatusCode)
-        {
-            var error = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
-            throw new ApiException(error?.Error ?? "Registration failed.");
-        }
+        await EnsureSuccessAsync(response);
     }
 
     // Jobs
@@ -74,6 +70,27 @@ public class ApiService
         await EnsureSuccessAsync(response);
     }
 
+    public async Task<List<ApplicationDto>> GetDueFollowUpsAsync()
+    {
+        var response = await _http.GetAsync("api/applications/due-follow-ups");
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<List<ApplicationDto>>() ?? [];
+    }
+
+    public async Task ScheduleFollowUpAsync(int applicationId, DateTime? nextFollowUpAt)
+    {
+        var response = await _http.PutAsJsonAsync(
+            $"api/applications/{applicationId}/follow-up",
+            new ScheduleFollowUpRequest { NextFollowUpAt = nextFollowUpAt });
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task SendFollowUpAsync(int applicationId)
+    {
+        var response = await _http.PostAsync($"api/applications/{applicationId}/follow-up/send", null);
+        await EnsureSuccessAsync(response);
+    }
+
     // Profile
     public async Task<UserProfileDto?> GetProfileAsync()
     {
@@ -111,6 +128,21 @@ public class ApiService
         await EnsureSuccessAsync(response);
     }
 
+    public async Task<UserProfileDto?> FillFromCvAsync()
+    {
+        var response = await _http.PostAsync("api/profile/fill-from-cv", null);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<UserProfileDto>();
+    }
+
+    public async Task<string?> RewriteExperienceAsync()
+    {
+        var response = await _http.PostAsync("api/profile/rewrite-experience", null);
+        await EnsureSuccessAsync(response);
+        var result = await response.Content.ReadFromJsonAsync<RewriteExperienceResponse>();
+        return result?.ExperienceSummary;
+    }
+
     // Quota & Billing
     public async Task<QuotaStatusDto?> GetQuotaStatusAsync()
     {
@@ -138,13 +170,81 @@ public class ApiService
         await EnsureSuccessAsync(response);
     }
 
+    public async Task<PendingRequestResponse?> GetPendingSubscriptionAsync()
+    {
+        var response = await _http.GetAsync("api/billing/pending-subscription");
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<PendingRequestResponse>();
+    }
+
+    public async Task<PendingRequestResponse?> GetPendingTokenResetAsync()
+    {
+        var response = await _http.GetAsync("api/billing/pending-token-reset");
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<PendingRequestResponse>();
+    }
+
+    // Bulk Apply
+    public async Task<BulkTemplateDto?> GetBulkTemplateAsync()
+    {
+        var response = await _http.GetAsync("api/bulk/template");
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<BulkTemplateDto>();
+    }
+
+    public async Task<ExtractEmailsResponse?> ExtractEmailsAsync(string sourceText)
+    {
+        var response = await _http.PostAsJsonAsync("api/bulk/extract-emails", new ExtractEmailsRequest { SourceText = sourceText });
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<ExtractEmailsResponse>();
+    }
+
+    public async Task SaveBulkTemplateAsync(string subject, string body)
+    {
+        var response = await _http.PutAsJsonAsync("api/bulk/template", new SaveBulkTemplateRequest { Subject = subject, Body = body });
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task ResetBulkTemplateAsync()
+    {
+        var response = await _http.DeleteAsync("api/bulk/template");
+        await EnsureSuccessAsync(response);
+    }
+
+    public async Task<BulkSendResponse?> BulkSendAsync(BulkSendRequest request)
+    {
+        var response = await _http.PostAsJsonAsync("api/bulk/send", request);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<BulkSendResponse>();
+    }
+
+    public async Task<BulkDispatchDto?> GetBulkDispatchAsync(int id)
+    {
+        var response = await _http.GetAsync($"api/bulk/dispatch/{id}");
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<BulkDispatchDto>();
+    }
+
     private static async Task EnsureSuccessAsync(HttpResponseMessage response)
     {
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
-            throw new ApiException(error?.Error ?? $"Request failed ({response.StatusCode}).");
+            ApiErrorResponse? error = null;
+            try
+            {
+                error = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+            }
+            catch
+            {
+                // Body was empty or not JSON.
+            }
+            throw new ApiException(error?.Error ?? $"Request failed ({(int)response.StatusCode} {response.StatusCode}).");
         }
+    }
+
+    private sealed class RewriteExperienceResponse
+    {
+        public string ExperienceSummary { get; set; } = string.Empty;
     }
 }
 

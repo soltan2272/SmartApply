@@ -13,6 +13,12 @@ public class ApplicationDto
     public int? MatchScore { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? SentAt { get; set; }
+    public DateTime? NextFollowUpAt { get; set; }
+}
+
+public class ScheduleFollowUpRequest
+{
+    public DateTime? NextFollowUpAt { get; set; }
 }
 
 public class UpdatePipelineRequest

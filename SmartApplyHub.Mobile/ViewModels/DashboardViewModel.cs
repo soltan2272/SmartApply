@@ -21,10 +21,12 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private int quotaUsed;
     [ObservableProperty] private int quotaLimit;
     [ObservableProperty] private int quotaRemaining;
+    [ObservableProperty] private double quotaProgress;
     [ObservableProperty] private int totalApplications;
     [ObservableProperty] private int totalSent;
     [ObservableProperty] private int pipelineInterviewing;
     [ObservableProperty] private int pipelineOffer;
+    [ObservableProperty] private int dueFollowUps;
     [ObservableProperty] private bool isBusy;
     [ObservableProperty] private string errorMessage = string.Empty;
 
@@ -39,18 +41,20 @@ public partial class DashboardViewModel : ObservableObject
 
             var quotaTask = _api.GetQuotaStatusAsync();
             var statsTask = _api.GetApplicationStatsAsync();
-            await Task.WhenAll(quotaTask, statsTask);
+            var dueTask = _api.GetDueFollowUpsAsync();
+            await Task.WhenAll(quotaTask, statsTask, dueTask);
 
-            var quota = quotaTask.Result;
+            var quota = await quotaTask;
             if (quota != null)
             {
                 Plan = quota.Plan;
                 QuotaUsed = quota.Used;
                 QuotaLimit = quota.Limit;
                 QuotaRemaining = quota.Remaining;
+                QuotaProgress = quota.Limit <= 0 ? 0 : Math.Clamp(quota.Used / (double)quota.Limit, 0, 1);
             }
 
-            var stats = statsTask.Result;
+            var stats = await statsTask;
             if (stats != null)
             {
                 TotalApplications = stats.TotalApplications;
@@ -58,6 +62,8 @@ public partial class DashboardViewModel : ObservableObject
                 PipelineInterviewing = stats.PipelineInterviewing;
                 PipelineOffer = stats.PipelineOffer;
             }
+
+            DueFollowUps = (await dueTask).Count;
         }
         catch (Exception ex)
         {
@@ -70,11 +76,24 @@ public partial class DashboardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task LogoutAsync()
+    private Task GoSearchAsync() => Shell.Current.GoToAsync("//JobSearch");
+
+    [RelayCommand]
+    private Task GoAnalyzeAsync() => Shell.Current.GoToAsync("//JobAnalyze");
+
+    [RelayCommand]
+    private Task GoApplicationsAsync() => Shell.Current.GoToAsync("//Applications");
+
+    [RelayCommand]
+    private Task GoBulkAsync() => Shell.Current.GoToAsync("//BulkApply");
+
+    [RelayCommand]
+    private Task LogoutAsync()
     {
         _auth.Logout();
+        var services = Application.Current!.Handler!.MauiContext!.Services;
         Application.Current!.Windows[0].Page = new NavigationPage(
-            new Pages.LoginPage(
-                Application.Current.Handler!.MauiContext!.Services.GetRequiredService<LoginViewModel>()));
+            services.GetRequiredService<Pages.LoginPage>());
+        return Task.CompletedTask;
     }
 }

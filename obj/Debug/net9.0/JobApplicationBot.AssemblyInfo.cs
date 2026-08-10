@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("JobApplicationBot")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+db142de6c4436462800c757f5f831d246a551ce0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3ad80e34c045f4c3c475e805d56d30a888d701b2")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartApply Hub")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartApply Hub")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

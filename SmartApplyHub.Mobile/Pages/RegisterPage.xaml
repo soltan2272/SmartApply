@@ -4,36 +4,43 @@
              xmlns:vm="clr-namespace:SmartApplyHub.Mobile.ViewModels"
              x:Class="SmartApplyHub.Mobile.Pages.RegisterPage"
              x:DataType="vm:RegisterViewModel"
-             Title="Register">
+             Title="Register"
+             BackgroundColor="{StaticResource PageBg}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+        <VerticalStackLayout Padding="24" Spacing="16" VerticalOptions="Center">
+            <Label Text="Create account" Style="{StaticResource PageTitle}" />
+            <Label Text="Join SmartApply Hub and start applying with AI." Style="{StaticResource Subtitle}" />
 
-            <Label Text="Create Account"
-                   FontSize="28" FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   TextColor="{StaticResource Primary}" />
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Email" Style="{StaticResource FieldLabel}" />
+                    <Entry Placeholder="you@email.com" Text="{Binding Email}" Keyboard="Email" />
 
-            <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" />
-            <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True" />
-            <Entry Placeholder="Confirm Password" Text="{Binding ConfirmPassword}" IsPassword="True" />
+                    <Label Text="Password" Style="{StaticResource FieldLabel}" />
+                    <Entry Placeholder="Create a password" Text="{Binding Password}" IsPassword="True" />
 
-            <Label Text="{Binding ErrorMessage}"
-                   TextColor="{StaticResource Danger}"
-                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}"
-                   FontSize="13" />
+                    <Label Text="Confirm password" Style="{StaticResource FieldLabel}" />
+                    <Entry Placeholder="Repeat password" Text="{Binding ConfirmPassword}" IsPassword="True" />
 
-            <Label Text="{Binding SuccessMessage}"
-                   TextColor="{StaticResource Success}"
-                   IsVisible="{Binding SuccessMessage, Converter={StaticResource StringToBoolConverter}}"
-                   FontSize="13" />
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}"
+                           IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}" />
+                    <Label Text="{Binding SuccessMessage}" Style="{StaticResource SuccessLabel}"
+                           IsVisible="{Binding SuccessMessage, Converter={StaticResource StringToBoolConverter}}" />
 
-            <Button Text="Register"
-                    Command="{Binding RegisterCommand}"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                    <Button Text="Create account" Command="{Binding RegisterCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                       Color="{StaticResource Primary}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
-
+            <Label Text="Already have an account? Log in"
+                   TextColor="{StaticResource Primary}" HorizontalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoToLoginCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

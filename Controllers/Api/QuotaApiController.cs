@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace JobApplicationBot.Controllers.Api;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/quota")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class QuotaApiController : ControllerBase
 {

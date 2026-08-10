@@ -7,20 +7,16 @@
              Title="Dashboard">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="16">
+        <VerticalStackLayout Padding="20" Spacing="14">
+            <Label Text="{Binding UserEmail, StringFormat='Hi, {0}'}" Style="{StaticResource PageTitle}" FontSize="24" />
+            <Label Text="Your job-hunt snapshot" Style="{StaticResource Subtitle}" />
 
-            <Label Text="{Binding UserEmail, StringFormat='Welcome, {0}'}"
-                   FontSize="20" FontAttributes="Bold" />
-
-            <!-- Quota Card -->
-            <Frame Padding="16" CornerRadius="12" HasShadow="True" BackgroundColor="White">
+            <Border Style="{StaticResource Card}" BackgroundColor="{StaticResource Primary}" StrokeThickness="0">
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="AI Quota" FontSize="18" FontAttributes="Bold" />
-                    <Label Text="{Binding Plan, StringFormat='Plan: {0}'}" />
-                    <ProgressBar Progress="{Binding QuotaUsed}" />
-                    <Label Text="{Binding QuotaRemaining, StringFormat='{0} analyses remaining'}"
-                           TextColor="{StaticResource DarkGray}" />
-                    <Label FontSize="12" TextColor="{StaticResource DarkGray}">
+                    <Label Text="{Binding Plan, StringFormat='{0} plan'}" TextColor="White" FontAttributes="Bold" FontSize="18" />
+                    <ProgressBar Progress="{Binding QuotaProgress}" ProgressColor="White" BackgroundColor="#6366F1" />
+                    <Label Text="{Binding QuotaRemaining, StringFormat='{0} AI analyses remaining'}" TextColor="#E0E7FF" />
+                    <Label FontSize="12" TextColor="#C7D2FE">
                         <Label.Text>
                             <MultiBinding StringFormat="{}{0} / {1} used this month">
                                 <Binding Path="QuotaUsed" />
@@ -29,32 +25,55 @@
                         </Label.Text>
                     </Label>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
-            <!-- Stats Card -->
-            <Frame Padding="16" CornerRadius="12" HasShadow="True" BackgroundColor="White">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Applications" FontSize="18" FontAttributes="Bold" />
-                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="8">
-                        <Label Text="{Binding TotalApplications, StringFormat='Total: {0}'}" Grid.Row="0" Grid.Column="0" />
-                        <Label Text="{Binding TotalSent, StringFormat='Sent: {0}'}" Grid.Row="0" Grid.Column="1" />
-                        <Label Text="{Binding PipelineInterviewing, StringFormat='Interviewing: {0}'}" Grid.Row="1" Grid.Column="0" />
-                        <Label Text="{Binding PipelineOffer, StringFormat='Offers: {0}'}" Grid.Row="1" Grid.Column="1" />
-                    </Grid>
-                </VerticalStackLayout>
-            </Frame>
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                <Border Style="{StaticResource Card}" Grid.Row="0" Grid.Column="0">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding TotalApplications}" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                        <Label Text="Applications" Style="{StaticResource Subtitle}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Style="{StaticResource Card}" Grid.Row="0" Grid.Column="1">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding TotalSent}" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Success}" />
+                        <Label Text="Emails sent" Style="{StaticResource Subtitle}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Style="{StaticResource Card}" Grid.Row="1" Grid.Column="0">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding PipelineInterviewing}" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Accent}" />
+                        <Label Text="Interviewing" Style="{StaticResource Subtitle}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Style="{StaticResource Card}" Grid.Row="1" Grid.Column="1">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding PipelineOffer}" FontSize="28" FontAttributes="Bold" TextColor="{StaticResource Warning}" />
+                        <Label Text="Offers" Style="{StaticResource Subtitle}" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
 
-            <Label Text="{Binding ErrorMessage}"
-                   TextColor="{StaticResource Danger}"
+            <Border Style="{StaticResource Card}" BackgroundColor="{StaticResource WarningSoft}"
+                    IsVisible="{Binding DueFollowUps, Converter={StaticResource IntToBoolConverter}}">
+                <Label Text="{Binding DueFollowUps, StringFormat='{0} follow-up(s) are due — open Applications to act.'}"
+                       TextColor="{StaticResource Warning}" FontAttributes="Bold" />
+            </Border>
+
+            <Label Text="Quick actions" Style="{StaticResource SectionTitle}" />
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                <Button Text="Search jobs" Command="{Binding GoSearchCommand}" Grid.Row="0" Grid.Column="0" />
+                <Button Text="Apply with AI" Command="{Binding GoAnalyzeCommand}" Style="{StaticResource SecondaryButton}" Grid.Row="0" Grid.Column="1" />
+                <Button Text="Applications" Command="{Binding GoApplicationsCommand}" Style="{StaticResource SecondaryButton}" Grid.Row="1" Grid.Column="0" />
+                <Button Text="Bulk apply" Command="{Binding GoBulkCommand}" Style="{StaticResource SecondaryButton}" Grid.Row="1" Grid.Column="1" />
+            </Grid>
+
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}"
                    IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Primary}" HorizontalOptions="Center" />
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
-
-            <Button Text="Logout"
-                    Command="{Binding LogoutCommand}"
-                    BackgroundColor="{StaticResource Danger}"
-                    HorizontalOptions="Center" />
-
+            <Button Text="Log out" Command="{Binding LogoutCommand}" Style="{StaticResource DangerButton}" Margin="0,8,0,0" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

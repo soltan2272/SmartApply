@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SmartApplyHub.Mobile.ViewModels"
+             x:Class="SmartApplyHub.Mobile.Pages.BulkApplyPage"
+             x:DataType="vm:BulkApplyViewModel"
+             Title="Bulk Apply">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="12">
+            <Label Text="Bulk apply" Style="{StaticResource PageTitle}" FontSize="24" />
+            <Label Text="Extract emails, customize your template, then queue applications." Style="{StaticResource Subtitle}" />
+            <Label Text="{Binding PlanInfo}" TextColor="{StaticResource Primary}" FontAttributes="Bold"
+                   IsVisible="{Binding PlanInfo, Converter={StaticResource StringToBoolConverter}}" />
+            <Label Text="{Binding ReadinessText}" Style="{StaticResource Subtitle}" FontSize="12" />
+
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}" />
+            <Label Text="{Binding SuccessMessage}" Style="{StaticResource SuccessLabel}"
+                   IsVisible="{Binding SuccessMessage, Converter={StaticResource StringToBoolConverter}}" />
+            <Label Text="{Binding DispatchSummary}" TextColor="{StaticResource Accent}" FontAttributes="Bold"
+                   IsVisible="{Binding DispatchSummary, Converter={StaticResource StringToBoolConverter}}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Primary}" HorizontalOptions="Center" />
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Paste text with emails" Style="{StaticResource SectionTitle}" Margin="0" />
+                    <Editor Placeholder="Paste job postings or contact lists..."
+                            Text="{Binding SourceText}" HeightRequest="120" />
+                    <Button Text="Extract emails" Command="{Binding ExtractEmailsCommand}" Style="{StaticResource SecondaryButton}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Recipients (one per line)" Style="{StaticResource SectionTitle}" Margin="0" />
+                    <Editor Text="{Binding RecipientsText}" HeightRequest="120" AutoSize="Disabled" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Email template" Style="{StaticResource SectionTitle}" Margin="0" />
+                    <Entry Placeholder="Subject" Text="{Binding Subject}" />
+                    <Editor Placeholder="Body" Text="{Binding Body}" HeightRequest="160" AutoSize="Disabled" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Text="Save template" Command="{Binding SaveTemplateCommand}" Style="{StaticResource SecondaryButton}" Grid.Column="0" />
+                        <Button Text="Reset template" Command="{Binding ResetTemplateCommand}" Style="{StaticResource SecondaryButton}" Grid.Column="1" />
+                    </Grid>
+                    <Button Text="Queue bulk send" Command="{Binding SendCommand}" Style="{StaticResource SuccessButton}" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

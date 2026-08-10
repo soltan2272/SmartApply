@@ -2,6 +2,8 @@ using System.Security.Claims;
 using JobApplicationBot.Data.Entities;
 using JobApplicationBot.Data.Repositories;
 using JobApplicationBot.Models.Api;
+using JobApplicationBot.Services;
+using JobApplicationBot.Services.Quota;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace JobApplicationBot.Controllers.Api;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/profile")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class ProfileApiController : ControllerBase
 {
@@ -19,15 +21,24 @@ public class ProfileApiController : ControllerBase
     private readonly IUserProfileRepository _profiles;
     private readonly IUserCvFileRepository _cvFiles;
     private readonly IUserEmailCredentialRepository _emailCredentials;
+    private readonly IAiService _ai;
+    private readonly IAiQuotaService _quota;
+    private readonly ICvTextExtractionService _cvText;
 
     public ProfileApiController(
         IUserProfileRepository profiles,
         IUserCvFileRepository cvFiles,
-        IUserEmailCredentialRepository emailCredentials)
+        IUserEmailCredentialRepository emailCredentials,
+        IAiService ai,
+        IAiQuotaService quota,
+        ICvTextExtractionService cvText)
     {
         _profiles = profiles;
         _cvFiles = cvFiles;
         _emailCredentials = emailCredentials;
+        _ai = ai;
+        _quota = quota;
+        _cvText = cvText;
     }
 
     private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -142,5 +153,111 @@ public class ProfileApiController : ControllerBase
 
         await _emailCredentials.UpsertAsync(cred, ct);
         return Ok(new { Message = "Email credential updated." });
+    }
+
+    [HttpPost("fill-from-cv")]
+    public async Task<IActionResult> FillFromCv(CancellationToken ct)
+    {
+        var profile = await _profiles.GetByUserIdAsync(UserId, ct) ?? new UserProfile { UserId = UserId };
+        var cv = await _cvFiles.GetAsync(UserId, ct);
+        if (cv == null || cv.Content.Length == 0)
+            return BadRequest(new ApiErrorResponse { Error = "Upload a CV (PDF or DOCX) first, then extract skills and experience." });
+
+        var quota = await _quota.TryConsumeAsync(UserId, ct);
+        if (!quota.Allowed)
+        {
+            return BadRequest(new ApiErrorResponse
+            {
+                Error = $"You've used your {quota.Limit} AI analyses this month. Request more tokens or a plan upgrade from Billing."
+            });
+        }
+
+        try
+        {
+            var cvText = _cvText.ExtractText(cv.Content, cv.FileName, cv.ContentType);
+            if (string.IsNullOrWhiteSpace(cvText))
+                return BadRequest(new ApiErrorResponse { Error = "Could not read text from the CV. Try a clearer PDF or DOCX." });
+
+            var extracted = await _ai.ExtractProfileFromCvAsync(cvText, null, ct);
+
+            if (!string.IsNullOrWhiteSpace(extracted.SkillsSummary))
+                profile.SkillsSummary = extracted.SkillsSummary;
+
+            var experience = extracted.ExperienceSummary;
+            if (string.IsNullOrWhiteSpace(experience))
+                experience = profile.ExperienceSummary;
+
+            var nameForRewrite = !string.IsNullOrWhiteSpace(extracted.FullName)
+                ? extracted.FullName
+                : profile.FullName;
+
+            if (!string.IsNullOrWhiteSpace(experience))
+            {
+                experience = await _ai.RewriteInFirstPersonAsync(experience, nameForRewrite, null, ct);
+                profile.ExperienceSummary = experience;
+            }
+
+            if (string.IsNullOrWhiteSpace(profile.FullName) && !string.IsNullOrWhiteSpace(extracted.FullName))
+                profile.FullName = extracted.FullName;
+            if (string.IsNullOrWhiteSpace(profile.Title) && !string.IsNullOrWhiteSpace(extracted.Title))
+                profile.Title = extracted.Title;
+            if (string.IsNullOrWhiteSpace(profile.Phone) && !string.IsNullOrWhiteSpace(extracted.Phone))
+                profile.Phone = extracted.Phone;
+            if (string.IsNullOrWhiteSpace(profile.ContactEmail) && !string.IsNullOrWhiteSpace(extracted.ContactEmail))
+                profile.ContactEmail = extracted.ContactEmail;
+
+            profile.UpdatedAt = DateTime.UtcNow;
+            await _profiles.UpsertAsync(profile, ct);
+
+            return Ok(new UserProfileDto
+            {
+                FullName = profile.FullName,
+                Title = profile.Title,
+                Phone = profile.Phone,
+                ContactEmail = profile.ContactEmail,
+                SkillsSummary = profile.SkillsSummary,
+                ExperienceSummary = profile.ExperienceSummary
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ApiErrorResponse { Error = $"Could not extract from CV: {ex.Message}" });
+        }
+    }
+
+    [HttpPost("rewrite-experience")]
+    public async Task<IActionResult> RewriteExperience(CancellationToken ct)
+    {
+        var profile = await _profiles.GetByUserIdAsync(UserId, ct);
+        if (profile == null || string.IsNullOrWhiteSpace(profile.ExperienceSummary))
+        {
+            return BadRequest(new ApiErrorResponse
+            {
+                Error = "No experience text found. Fill from CV first, or type experience manually."
+            });
+        }
+
+        var quota = await _quota.TryConsumeAsync(UserId, ct);
+        if (!quota.Allowed)
+        {
+            return BadRequest(new ApiErrorResponse
+            {
+                Error = $"You've used your {quota.Limit} AI analyses this month. Request more tokens or a plan upgrade from Billing."
+            });
+        }
+
+        try
+        {
+            profile.ExperienceSummary = await _ai.RewriteInFirstPersonAsync(
+                profile.ExperienceSummary, profile.FullName, null, ct);
+            profile.UpdatedAt = DateTime.UtcNow;
+            await _profiles.UpsertAsync(profile, ct);
+
+            return Ok(new { ExperienceSummary = profile.ExperienceSummary });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ApiErrorResponse { Error = $"Could not rewrite experience: {ex.Message}" });
+        }
     }
 }

@@ -226,7 +226,14 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// In Development, skip the HTTP->HTTPS redirect so the Android emulator can
+// call the API over plain HTTP (http://10.0.2.2:5210). Android rejects the
+// dev HTTPS certificate (issued for "localhost", not "10.0.2.2"), so the
+// redirect would break every mobile API call with a TLS handshake failure.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseRouting();
 app.UseCors("MobileApp");
 app.UseRateLimiter();

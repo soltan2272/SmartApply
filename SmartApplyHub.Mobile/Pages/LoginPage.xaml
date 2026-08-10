@@ -5,50 +5,49 @@
              x:Class="SmartApplyHub.Mobile.Pages.LoginPage"
              x:DataType="vm:LoginViewModel"
              Title="Login"
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource Primary}">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+    <Grid>
+        <BoxView Color="{StaticResource Primary}" />
+        <ScrollView>
+            <VerticalStackLayout Padding="28" Spacing="0" VerticalOptions="Center">
+                <Label Text="SmartApply Hub"
+                       FontSize="34" FontAttributes="Bold"
+                       TextColor="White" HorizontalOptions="Center" />
+                <Label Text="Apply smarter. Track every opportunity."
+                       Style="{StaticResource Subtitle}" TextColor="#C7D2FE"
+                       HorizontalOptions="Center" Margin="0,6,0,28" />
 
-            <Label Text="SmartApply Hub"
-                   FontSize="32" FontAttributes="Bold"
-                   HorizontalOptions="Center"
-                   TextColor="{StaticResource Primary}" />
+                <Border Style="{StaticResource Card}" Padding="22" StrokeThickness="0">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Welcome back" Style="{StaticResource SectionTitle}" Margin="0" />
+                        <Label Text="Sign in to continue" Style="{StaticResource Subtitle}" />
 
-            <Label Text="Sign in to your account"
-                   FontSize="16" HorizontalOptions="Center"
-                   TextColor="{StaticResource DarkGray}" />
+                        <Label Text="Email" Style="{StaticResource FieldLabel}" />
+                        <Entry Placeholder="you@email.com" Text="{Binding Email}" Keyboard="Email" />
 
-            <Entry Placeholder="Email"
-                   Text="{Binding Email}"
-                   Keyboard="Email" />
+                        <Label Text="Password" Style="{StaticResource FieldLabel}" />
+                        <Entry Placeholder="••••••••" Text="{Binding Password}" IsPassword="True" />
 
-            <Entry Placeholder="Password"
-                   Text="{Binding Password}"
-                   IsPassword="True" />
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}"
+                               IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}" />
 
-            <Label Text="{Binding ErrorMessage}"
-                   TextColor="{StaticResource Danger}"
-                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}"
-                   FontSize="13" />
+                        <Button Text="Login" Command="{Binding LoginCommand}"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
 
-            <Button Text="Login"
-                    Command="{Binding LoginCommand}"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                           Color="{StaticResource Primary}" HorizontalOptions="Center" />
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}"
-                               HorizontalOptions="Center" />
-
-            <Label Text="Don't have an account? Register"
-                   TextColor="{StaticResource Primary}"
-                   HorizontalOptions="Center"
-                   FontSize="14">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding GoToRegisterCommand}" />
-                </Label.GestureRecognizers>
-            </Label>
-
-        </VerticalStackLayout>
-    </ScrollView>
+                        <Label Text="Don't have an account? Register"
+                               TextColor="{StaticResource Primary}" HorizontalOptions="Center" Margin="0,4,0,0">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding GoToRegisterCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

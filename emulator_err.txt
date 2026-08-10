@@ -1,0 +1,29 @@
+initialize: Supports id properties, got a vulkan device UUID
+netsimd I 08-08 14:40:31.572 daemon\src\rust_main.rs:98 - netsim artifacts path: "C:\\Users\\SOLTAN~1\\AppData\\Local\\Temp\\netsimd"
+netsimd I 08-08 14:40:31.575 daemon\src\rust_main.rs:101 - NetsimdArgs {
+    fd_startup_str: None,
+    no_cli_ui: true,
+    no_web_ui: true,
+    pcap: false,
+    disable_address_reuse: false,
+    hci_port: None,
+    connector_instance: None,
+    instance: None,
+    logtostderr: false,
+    dev: false,
+    rust_grpc: false,
+    rust_hostapd: false,
+    rust_slirp: false,
+    vsock: None,
+    config: None,
+    host_dns: Some(
+        "192.168.1.1",
+    ),
+    http_proxy: None,
+    wifi_tap: None,
+    test_beacons: false,
+    no_test_beacons: false,
+    no_shutdown: false,
+    verbose: false,
+    version: false,
+}

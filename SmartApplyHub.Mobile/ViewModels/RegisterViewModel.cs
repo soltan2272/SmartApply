@@ -8,10 +8,12 @@ namespace SmartApplyHub.Mobile.ViewModels;
 public partial class RegisterViewModel : ObservableObject
 {
     private readonly ApiService _api;
+    private readonly NavigationService _nav;
 
-    public RegisterViewModel(ApiService api)
+    public RegisterViewModel(ApiService api, NavigationService nav)
     {
         _api = api;
+        _nav = nav;
     }
 
     [ObservableProperty] private string email = string.Empty;
@@ -67,5 +69,11 @@ public partial class RegisterViewModel : ObservableObject
         {
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private async Task GoToLoginAsync()
+    {
+        await _nav.PopAsync();
     }
 }

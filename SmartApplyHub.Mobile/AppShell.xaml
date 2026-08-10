@@ -4,26 +4,38 @@
        xmlns:pages="clr-namespace:SmartApplyHub.Mobile.Pages"
        x:Class="SmartApplyHub.Mobile.AppShell"
        Title="SmartApply Hub"
+       FlyoutBackgroundColor="White"
+       Shell.BackgroundColor="{StaticResource Primary}"
+       Shell.ForegroundColor="White"
+       Shell.TitleColor="White"
        Shell.FlyoutBehavior="Flyout">
 
-    <FlyoutItem Title="Dashboard" Icon="{x:Null}">
-        <ShellContent ContentTemplate="{DataTemplate pages:DashboardPage}" Route="Dashboard" />
+    <FlyoutItem Title="Dashboard" Route="Dashboard">
+        <ShellContent ContentTemplate="{DataTemplate pages:DashboardPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Search Jobs" Icon="{x:Null}">
-        <ShellContent ContentTemplate="{DataTemplate pages:JobSearchPage}" Route="JobSearch" />
+    <FlyoutItem Title="Search Jobs" Route="JobSearch">
+        <ShellContent ContentTemplate="{DataTemplate pages:JobSearchPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Applications" Icon="{x:Null}">
-        <ShellContent ContentTemplate="{DataTemplate pages:ApplicationsPage}" Route="Applications" />
+    <FlyoutItem Title="Apply with AI" Route="JobAnalyze">
+        <ShellContent ContentTemplate="{DataTemplate pages:JobAnalyzePage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Profile" Icon="{x:Null}">
-        <ShellContent ContentTemplate="{DataTemplate pages:ProfilePage}" Route="Profile" />
+    <FlyoutItem Title="Applications" Route="Applications">
+        <ShellContent ContentTemplate="{DataTemplate pages:ApplicationsPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Subscription" Icon="{x:Null}">
-        <ShellContent ContentTemplate="{DataTemplate pages:SubscriptionPage}" Route="Subscription" />
+    <FlyoutItem Title="Bulk Apply" Route="BulkApply">
+        <ShellContent ContentTemplate="{DataTemplate pages:BulkApplyPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Profile" Route="Profile">
+        <ShellContent ContentTemplate="{DataTemplate pages:ProfilePage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Subscription" Route="Subscription">
+        <ShellContent ContentTemplate="{DataTemplate pages:SubscriptionPage}" />
     </FlyoutItem>
 
 </Shell>

@@ -8,51 +8,61 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="12">
+            <Label Text="Your profile" Style="{StaticResource PageTitle}" FontSize="24" />
+            <Label Text="{Binding QuotaSummary}" Style="{StaticResource Subtitle}"
+                   IsVisible="{Binding QuotaSummary, Converter={StaticResource StringToBoolConverter}}" />
+            <Label Text="{Binding Plan, StringFormat='Plan: {0}'}" TextColor="{StaticResource Primary}" FontAttributes="Bold"
+                   IsVisible="{Binding Plan, Converter={StaticResource StringToBoolConverter}}" />
 
-            <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}"
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}"
                    IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}" />
-            <Label Text="{Binding SuccessMessage}" TextColor="{StaticResource Success}"
+            <Label Text="{Binding SuccessMessage}" Style="{StaticResource SuccessLabel}"
                    IsVisible="{Binding SuccessMessage, Converter={StaticResource StringToBoolConverter}}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Primary}" HorizontalOptions="Center" />
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Personal info" Style="{StaticResource SectionTitle}" Margin="0" />
+                    <Entry Placeholder="Full name" Text="{Binding FullName}" />
+                    <Entry Placeholder="Job title" Text="{Binding Title}" />
+                    <Entry Placeholder="Phone" Text="{Binding Phone}" Keyboard="Telephone" />
+                    <Entry Placeholder="Contact email" Text="{Binding ContactEmail}" Keyboard="Email" />
+                    <Label Text="Skills" Style="{StaticResource FieldLabel}" />
+                    <Editor Placeholder="Key skills..." Text="{Binding SkillsSummary}" HeightRequest="80" />
+                    <Label Text="Experience" Style="{StaticResource FieldLabel}" />
+                    <Editor Placeholder="Experience summary..." Text="{Binding ExperienceSummary}" HeightRequest="110" />
+                    <Button Text="Save profile" Command="{Binding SaveProfileCommand}" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Text="Fill from CV" Command="{Binding FillFromCvCommand}" Style="{StaticResource SecondaryButton}" Grid.Column="0" />
+                        <Button Text="Rewrite experience" Command="{Binding RewriteExperienceCommand}" Style="{StaticResource SecondaryButton}" Grid.Column="1" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
 
-            <!-- Profile Section -->
-            <Label Text="Personal Info" FontSize="20" FontAttributes="Bold" />
-            <Entry Placeholder="Full Name" Text="{Binding FullName}" />
-            <Entry Placeholder="Job Title" Text="{Binding Title}" />
-            <Entry Placeholder="Phone" Text="{Binding Phone}" Keyboard="Telephone" />
-            <Entry Placeholder="Contact Email" Text="{Binding ContactEmail}" Keyboard="Email" />
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="CV / Resume" Style="{StaticResource SectionTitle}" Margin="0" />
+                    <Label Text="{Binding CvFileName, StringFormat='Current: {0}'}"
+                           IsVisible="{Binding CvFileName, Converter={StaticResource StringToBoolConverter}}" />
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="Upload CV" Command="{Binding UploadCvCommand}" />
+                        <Button Text="Delete CV" Command="{Binding DeleteCvCommand}" Style="{StaticResource DangerButton}"
+                                IsVisible="{Binding CvFileName, Converter={StaticResource StringToBoolConverter}}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
 
-            <Label Text="Skills Summary" FontAttributes="Bold" />
-            <Editor Placeholder="List your key skills..." Text="{Binding SkillsSummary}"
-                    HeightRequest="80" AutoSize="TextChanges" />
-
-            <Label Text="Experience Summary" FontAttributes="Bold" />
-            <Editor Placeholder="Describe your experience..." Text="{Binding ExperienceSummary}"
-                    HeightRequest="100" AutoSize="TextChanges" />
-
-            <Button Text="Save Profile" Command="{Binding SaveProfileCommand}" />
-
-            <!-- CV Section -->
-            <BoxView HeightRequest="1" Color="{StaticResource LightGray}" Margin="0,8" />
-            <Label Text="CV / Resume" FontSize="20" FontAttributes="Bold" />
-            <Label Text="{Binding CvFileName, StringFormat='Current: {0}'}"
-                   IsVisible="{Binding CvFileName, Converter={StaticResource StringToBoolConverter}}" />
-            <HorizontalStackLayout Spacing="12">
-                <Button Text="Upload CV" Command="{Binding UploadCvCommand}" />
-                <Button Text="Delete CV" Command="{Binding DeleteCvCommand}"
-                        BackgroundColor="{StaticResource Danger}"
-                        IsVisible="{Binding CvFileName, Converter={StaticResource StringToBoolConverter}}" />
-            </HorizontalStackLayout>
-
-            <!-- Email Credential Section -->
-            <BoxView HeightRequest="1" Color="{StaticResource LightGray}" Margin="0,8" />
-            <Label Text="Gmail App Password" FontSize="20" FontAttributes="Bold" />
-            <Entry Placeholder="Gmail address" Text="{Binding SenderEmail}" Keyboard="Email" />
-            <Entry Placeholder="Display name" Text="{Binding SenderName}" />
-            <Entry Placeholder="App Password (16 chars)" Text="{Binding AppPassword}" IsPassword="True" />
-            <Button Text="Save Email Credential" Command="{Binding SaveEmailCredentialCommand}" />
-
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Gmail App Password" Style="{StaticResource SectionTitle}" Margin="0" />
+                    <Label Text="Required to send application emails from your Gmail." Style="{StaticResource Subtitle}" />
+                    <Entry Placeholder="Gmail address" Text="{Binding SenderEmail}" Keyboard="Email" />
+                    <Entry Placeholder="Display name" Text="{Binding SenderName}" />
+                    <Entry Placeholder="App Password" Text="{Binding AppPassword}" IsPassword="True" />
+                    <Button Text="Save email credential" Command="{Binding SaveEmailCredentialCommand}" />
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SmartApplyHub.Mobile.Pages;
 using SmartApplyHub.Mobile.Services;
 using SmartApplyHub.Shared.Models;
 
@@ -9,11 +10,13 @@ public partial class LoginViewModel : ObservableObject
 {
     private readonly ApiService _api;
     private readonly AuthService _auth;
+    private readonly NavigationService _nav;
 
-    public LoginViewModel(ApiService api, AuthService auth)
+    public LoginViewModel(ApiService api, AuthService auth, NavigationService nav)
     {
         _api = api;
         _auth = auth;
+        _nav = nav;
     }
 
     [ObservableProperty] private string email = string.Empty;
@@ -72,6 +75,6 @@ public partial class LoginViewModel : ObservableObject
     [RelayCommand]
     private async Task GoToRegisterAsync()
     {
-        await Shell.Current?.GoToAsync("Register")!;
+        await _nav.PushAsync<RegisterPage>();
     }
 }

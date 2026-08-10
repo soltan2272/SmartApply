@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace JobApplicationBot.Controllers.Api;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthApiController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;

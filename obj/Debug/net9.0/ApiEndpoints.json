@@ -1,1 +1,285 @@
-[]
+[
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.ApplicationsApiController",
+    "Method": "Index",
+    "RelativePath": "api/ApplicationsApi",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.ApplicationsApiController",
+    "Method": "UpdatePipeline",
+    "RelativePath": "api/ApplicationsApi/{id}/pipeline",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "JobApplicationBot.Models.Api.UpdatePipelineRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.ApplicationsApiController",
+    "Method": "Stats",
+    "RelativePath": "api/ApplicationsApi/stats",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.AuthApiController",
+    "Method": "Login",
+    "RelativePath": "api/AuthApi/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "JobApplicationBot.Models.Api.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.AuthApiController",
+    "Method": "Refresh",
+    "RelativePath": "api/AuthApi/refresh",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "JobApplicationBot.Models.Api.RefreshRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.AuthApiController",
+    "Method": "Register",
+    "RelativePath": "api/AuthApi/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "JobApplicationBot.Models.Api.RegisterRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.BillingApiController",
+    "Method": "PendingSubscription",
+    "RelativePath": "api/BillingApi/pending-subscription",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.BillingApiController",
+    "Method": "PendingTokenReset",
+    "RelativePath": "api/BillingApi/pending-token-reset",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.BillingApiController",
+    "Method": "RequestSubscription",
+    "RelativePath": "api/BillingApi/request-subscription",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "JobApplicationBot.Models.Api.SubscriptionRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.BillingApiController",
+    "Method": "RequestTokenReset",
+    "RelativePath": "api/BillingApi/request-token-reset",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "JobApplicationBot.Models.Api.TokenResetRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.JobsApiController",
+    "Method": "Analyze",
+    "RelativePath": "api/JobsApi/analyze",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "JobApplicationBot.Models.Api.JobAnalyzeRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.JobsApiController",
+    "Method": "Search",
+    "RelativePath": "api/JobsApi/search",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "JobApplicationBot.Models.Api.JobSearchRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.JobsApiController",
+    "Method": "Send",
+    "RelativePath": "api/JobsApi/send",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "JobApplicationBot.Models.Api.SendEmailRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.ProfileApiController",
+    "Method": "Get",
+    "RelativePath": "api/ProfileApi",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.ProfileApiController",
+    "Method": "Update",
+    "RelativePath": "api/ProfileApi",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "JobApplicationBot.Models.Api.UpdateProfileRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.ProfileApiController",
+    "Method": "UploadCv",
+    "RelativePath": "api/ProfileApi/cv",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "file",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.ProfileApiController",
+    "Method": "DeleteCv",
+    "RelativePath": "api/ProfileApi/cv",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.ProfileApiController",
+    "Method": "UpdateEmailCredential",
+    "RelativePath": "api/ProfileApi/email-credential",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "JobApplicationBot.Models.Api.UpdateEmailCredentialRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.QuotaApiController",
+    "Method": "Plans",
+    "RelativePath": "api/QuotaApi/plans",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "JobApplicationBot.Controllers.Api.QuotaApiController",
+    "Method": "Status",
+    "RelativePath": "api/QuotaApi/status",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]

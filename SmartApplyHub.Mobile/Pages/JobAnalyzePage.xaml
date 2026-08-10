@@ -4,58 +4,63 @@
              xmlns:vm="clr-namespace:SmartApplyHub.Mobile.ViewModels"
              x:Class="SmartApplyHub.Mobile.Pages.JobAnalyzePage"
              x:DataType="vm:JobAnalyzeViewModel"
-             Title="Analyze Job">
+             Title="Apply with AI">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="14">
+        <VerticalStackLayout Padding="20" Spacing="12">
+            <Label Text="Analyze &amp; apply" Style="{StaticResource PageTitle}" FontSize="24" />
+            <Label Text="Paste a job URL or description. Edit the email before sending." Style="{StaticResource Subtitle}" />
 
-            <Entry Placeholder="Job URL" Text="{Binding JobUrl}" />
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Job URL" Style="{StaticResource FieldLabel}" />
+                    <Entry Placeholder="https://..." Text="{Binding JobUrl}" />
+                    <Label Text="or paste description" Style="{StaticResource FieldLabel}" />
+                    <Editor Placeholder="Paste the full job description..."
+                            Text="{Binding JobDescription}" HeightRequest="120" AutoSize="Disabled" />
+                    <Button Text="Analyze with AI" Command="{Binding AnalyzeCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                </VerticalStackLayout>
+            </Border>
 
-            <Label Text="— or paste description below —"
-                   HorizontalOptions="Center" TextColor="{StaticResource DarkGray}" FontSize="12" />
-
-            <Editor Placeholder="Paste job description here..."
-                    Text="{Binding JobDescription}" HeightRequest="120"
-                    AutoSize="TextChanges" />
-
-            <Button Text="Analyze with AI" Command="{Binding AnalyzeCommand}"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
-
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
-
-            <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}"
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource Primary}" HorizontalOptions="Center" />
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}"
                    IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}" />
-
-            <Label Text="{Binding SuccessMessage}" TextColor="{StaticResource Success}"
+            <Label Text="{Binding SuccessMessage}" Style="{StaticResource SuccessLabel}"
                    IsVisible="{Binding SuccessMessage, Converter={StaticResource StringToBoolConverter}}" />
 
-            <!-- Email Preview (shown after analysis) -->
-            <Frame Padding="16" CornerRadius="12" HasShadow="True" BackgroundColor="White"
-                   IsVisible="{Binding IsAnalyzed}">
+            <Border Style="{StaticResource Card}" IsVisible="{Binding IsAnalyzed}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Email Preview" FontSize="20" FontAttributes="Bold" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Email preview" Style="{StaticResource SectionTitle}" Margin="0" />
+                        <Border Style="{StaticResource Chip}" Grid.Column="1" BackgroundColor="{StaticResource SuccessSoft}">
+                            <Label Text="{Binding MatchScore, StringFormat='{0}% match'}"
+                                   TextColor="{StaticResource Success}" FontAttributes="Bold" FontSize="12" />
+                        </Border>
+                    </Grid>
 
-                    <Label Text="{Binding EmailPreview.MatchScore, StringFormat='Match Score: {0}%'}"
-                           FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                    <Label Text="{Binding JobTitle}" FontAttributes="Bold" />
+                    <Label Text="{Binding CompanyName}" TextColor="{StaticResource Primary}" />
+                    <Label Text="{Binding MatchedSkillsText}" Style="{StaticResource Subtitle}" FontSize="12" />
+                    <Label Text="CV on file — will be attached"
+                           TextColor="{StaticResource Success}" FontSize="12"
+                           IsVisible="{Binding HasCvOnFile}" />
+                    <Label Text="No CV on file — upload one in Profile before sending"
+                           TextColor="{StaticResource Warning}" FontSize="12"
+                           IsVisible="{Binding HasCvOnFile, Converter={StaticResource InvertedBoolConverter}}" />
 
-                    <Label Text="{Binding EmailPreview.JobTitle, StringFormat='Job: {0}'}" />
-                    <Label Text="{Binding EmailPreview.CompanyName, StringFormat='Company: {0}'}" />
+                    <Label Text="To" Style="{StaticResource FieldLabel}" />
+                    <Entry Text="{Binding ToEmail}" Keyboard="Email" />
+                    <Label Text="Subject" Style="{StaticResource FieldLabel}" />
+                    <Entry Text="{Binding Subject}" />
+                    <Label Text="Body" Style="{StaticResource FieldLabel}" />
+                    <Editor Text="{Binding Body}" HeightRequest="180" AutoSize="Disabled" />
 
-                    <Label Text="To:" FontAttributes="Bold" />
-                    <Label Text="{Binding EmailPreview.ToEmail}" />
-
-                    <Label Text="Subject:" FontAttributes="Bold" />
-                    <Label Text="{Binding EmailPreview.Subject}" />
-
-                    <Label Text="Body:" FontAttributes="Bold" />
-                    <Label Text="{Binding EmailPreview.Body}" FontSize="13" />
-
-                    <Button Text="Send Email"
-                            Command="{Binding SendEmailCommand}"
-                            BackgroundColor="{StaticResource Success}" />
+                    <Button Text="Send email" Command="{Binding SendEmailCommand}" Style="{StaticResource SuccessButton}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
                 </VerticalStackLayout>
-            </Frame>
-
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
