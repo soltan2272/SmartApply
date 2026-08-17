@@ -68,10 +68,12 @@ public static class MauiProgram
         builder.Services.AddTransient<DashboardPage>();
         builder.Services.AddTransient<JobSearchPage>();
         builder.Services.AddTransient<JobAnalyzePage>();
+        builder.Services.AddTransient<JobAnalyzeDetailPage>();
         builder.Services.AddTransient<ApplicationsPage>();
         builder.Services.AddTransient<ProfilePage>();
         builder.Services.AddTransient<SubscriptionPage>();
         builder.Services.AddTransient<BulkApplyPage>();
+
 
         return builder.Build();
     }

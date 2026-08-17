@@ -1,11 +1,13 @@
 using System.Security.Claims;
 using JobApplicationBot.Data.Repositories;
+using JobApplicationBot.Models;
 using JobApplicationBot.Models.Api;
 using JobApplicationBot.Services;
 using JobApplicationBot.Services.Quota;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace JobApplicationBot.Controllers.Api;
 
@@ -23,6 +25,8 @@ public class JobsApiController : ControllerBase
     private readonly IAiQuotaService _quota;
     private readonly IApplicationTrackingService _tracking;
     private readonly ICvTextExtractionService _cvText;
+    private readonly JobSearchSettings _jobSearchSettings;
+    private readonly AiSettings _aiSettings;
 
     public JobsApiController(
         IJobScraperService scraper,
@@ -33,7 +37,9 @@ public class JobsApiController : ControllerBase
         IUserEmailCredentialRepository emailCredentials,
         IAiQuotaService quota,
         IApplicationTrackingService tracking,
-        ICvTextExtractionService cvText)
+        ICvTextExtractionService cvText,
+        IOptions<JobSearchSettings> jobSearchSettings,
+        IOptions<AiSettings> aiSettings)
     {
         _scraper = scraper;
         _ai = ai;
@@ -44,6 +50,8 @@ public class JobsApiController : ControllerBase
         _quota = quota;
         _tracking = tracking;
         _cvText = cvText;
+        _jobSearchSettings = jobSearchSettings.Value;
+        _aiSettings = aiSettings.Value;
     }
 
     private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -54,8 +62,65 @@ public class JobsApiController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.Title))
             return BadRequest(new ApiErrorResponse { Error = "Job title is required." });
 
-        var results = await _scraper.SearchJobsAsync(
-            request.Title, request.ExperienceLevel, request.DatePosted, request.Location);
+        var outcome = await _scraper.SearchJobsAsync(
+            request.Title, request.ExperienceLevel, request.DatePosted,
+            string.IsNullOrWhiteSpace(request.Location) ? null : request.Location.Trim());
+        var results = outcome.Results;
+        var rankedWithAi = false;
+        string? aiRankSkipReason = null;
+        var aiConfigured = !string.IsNullOrWhiteSpace(_aiSettings.ApiKey);
+        var isAdmin = User.IsInRole("Admin");
+
+        if (request.RankWithAi && results.Count > 0)
+        {
+            var profile = await _profiles.GetByUserIdAsync(UserId, ct);
+            if (profile == null || string.IsNullOrWhiteSpace(profile.FullName))
+            {
+                aiRankSkipReason = "Complete your profile before using AI ranking.";
+            }
+            else if (!aiConfigured && string.IsNullOrWhiteSpace(profile.PersonalGeminiApiKey))
+            {
+                aiRankSkipReason =
+                    "Configure AI key in server settings (Ai:ApiKey) to use Rank with AI.";
+            }
+            else
+            {
+                var quotaAllowed = isAdmin;
+                if (!isAdmin)
+                {
+                    var quota = await _quota.TryConsumeAsync(UserId, ct);
+                    quotaAllowed = quota.Allowed;
+                    if (!quota.Allowed)
+                    {
+                        aiRankSkipReason =
+                            $"Monthly AI quota exhausted ({quota.Limit} used). Results are shown without AI ranking.";
+                    }
+                }
+
+                if (quotaAllowed)
+                {
+                    try
+                    {
+                        string? cvText = null;
+                        var cv = await _cvFiles.GetAsync(UserId, ct);
+                        if (cv is { Content.Length: > 0 })
+                        {
+                            try { cvText = _cvText.ExtractText(cv.Content, cv.FileName, cv.ContentType); }
+                            catch { /* proceed without CV */ }
+                        }
+
+                        results = await _ai.RankJobSearchResultsAsync(
+                            results, profile, cvText, profile.PersonalGeminiApiKey,
+                            _jobSearchSettings.MaxAiRankResults, ct);
+                        rankedWithAi = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        aiRankSkipReason = $"AI ranking failed: {ex.Message}. Results are shown unranked.";
+                    }
+                }
+            }
+        }
 
         var dtos = results.Select(r => new JobSearchResultDto
         {
@@ -66,10 +131,21 @@ public class JobsApiController : ControllerBase
             DatePosted = r.DatePosted,
             LogoUrl = r.LogoUrl,
             Snippet = r.Snippet,
-            ResultType = r.ResultType
+            ResultType = r.ResultType,
+            MatchScore = r.MatchScore,
+            MatchReason = r.MatchReason
         }).ToList();
 
-        return Ok(dtos);
+        return Ok(new
+        {
+            items = dtos,
+            totalCount = dtos.Count,
+            rankedWithAi,
+            aiRankSkipReason,
+            hiringPostsStatus = outcome.HiringPostsStatus,
+            jobAlertCount = dtos.Count(d => !string.Equals(d.ResultType, "Post", StringComparison.OrdinalIgnoreCase)),
+            hiringPostCount = dtos.Count(d => string.Equals(d.ResultType, "Post", StringComparison.OrdinalIgnoreCase))
+        });
     }
 
     [HttpPost("analyze")]

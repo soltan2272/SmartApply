@@ -53,3 +53,9 @@ public class JwtSettings
     public string Audience { get; set; } = "SmartApplyHub.Mobile";
     public int ExpiryMinutes { get; set; } = 1440;
 }
+
+public class JobSearchSettings
+{
+    /// <summary>How many results to send to Gemini when ranking a search (batched).</summary>
+    public int MaxAiRankResults { get; set; } = 50;
+}

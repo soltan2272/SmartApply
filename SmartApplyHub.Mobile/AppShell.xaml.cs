@@ -8,7 +8,8 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
 
-        // Detail route used when tapping a search result (pushes on top of shell).
-        Routing.RegisterRoute("JobAnalyzeDetail", typeof(JobAnalyzePage));
+        // Must use a distinct page type — JobAnalyzePage is already a ShellContent.
+        Routing.RegisterRoute("JobAnalyzeDetail", typeof(JobAnalyzeDetailPage));
     }
 }
+

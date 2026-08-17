@@ -15,6 +15,12 @@
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+
+		<!-- Embed assemblies in Debug APKs so the app can start when installed
+		     without Visual Studio Fast Deployment (adb install / incomplete deploy).
+		     Without this, Android aborts with: "No assemblies found in .__override__". -->
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+		<AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
 	</PropertyGroup>
 
 	<ItemGroup>

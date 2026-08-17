@@ -8,7 +8,7 @@ namespace SmartApplyHub.Mobile.ViewModels;
 
 public partial class JobSearchViewModel : ObservableObject
 {
-    private const int PageSize = 10;
+    private const int PageSize = 15;
     private readonly ApiService _api;
     private List<JobSearchResultDto> _allResults = [];
 
@@ -37,9 +37,10 @@ public partial class JobSearchViewModel : ObservableObject
     }
 
     [ObservableProperty] private string title = string.Empty;
-    [ObservableProperty] private string location = "Egypt";
+    [ObservableProperty] private string location = string.Empty;
     [ObservableProperty] private FilterOption? selectedExperience;
     [ObservableProperty] private FilterOption? selectedDatePosted;
+    [ObservableProperty] private bool rankWithAi;
     [ObservableProperty] private bool isBusy;
     [ObservableProperty] private string errorMessage = string.Empty;
     [ObservableProperty] private bool hasSearched;
@@ -49,6 +50,9 @@ public partial class JobSearchViewModel : ObservableObject
     [ObservableProperty] private bool canGoPrevious;
     [ObservableProperty] private bool canGoNext;
     [ObservableProperty] private string resultsSummary = string.Empty;
+    [ObservableProperty] private bool rankedWithAi;
+    [ObservableProperty] private string? hiringPostsStatus;
+    [ObservableProperty] private string? aiRankSkipReason;
 
     public List<FilterOption> ExperienceLevels { get; }
     public List<FilterOption> DatePostedOptions { get; }
@@ -68,20 +72,33 @@ public partial class JobSearchViewModel : ObservableObject
             IsBusy = true;
             ErrorMessage = string.Empty;
             HasSearched = true;
+            RankedWithAi = false;
+            HiringPostsStatus = null;
+            AiRankSkipReason = null;
             Results.Clear();
 
-            _allResults = await _api.SearchJobsAsync(new JobSearchRequest
+            var response = await _api.SearchJobsAsync(new JobSearchRequest
             {
                 Title = Title.Trim(),
-                Location = string.IsNullOrWhiteSpace(Location) ? "Egypt" : Location.Trim(),
+                Location = string.IsNullOrWhiteSpace(Location) ? null : Location.Trim(),
                 ExperienceLevel = string.IsNullOrWhiteSpace(SelectedExperience?.Value) ? null : SelectedExperience!.Value,
-                DatePosted = string.IsNullOrWhiteSpace(SelectedDatePosted?.Value) ? null : SelectedDatePosted!.Value
+                DatePosted = string.IsNullOrWhiteSpace(SelectedDatePosted?.Value) ? null : SelectedDatePosted!.Value,
+                RankWithAi = RankWithAi
             });
 
-            TotalCount = _allResults.Count;
+            _allResults = response.Items ?? [];
+            TotalCount = response.TotalCount > 0 ? response.TotalCount : _allResults.Count;
+            RankedWithAi = response.RankedWithAi;
+            HiringPostsStatus = response.HiringPostsStatus;
+            AiRankSkipReason = response.AiRankSkipReason;
             TotalPages = Math.Max(1, (int)Math.Ceiling(TotalCount / (double)PageSize));
             CurrentPage = 1;
             ApplyPage();
+
+            if (!string.IsNullOrWhiteSpace(AiRankSkipReason))
+                ErrorMessage = AiRankSkipReason;
+            else if (!string.IsNullOrWhiteSpace(HiringPostsStatus) && response.HiringPostCount == 0)
+                ErrorMessage = HiringPostsStatus;
         }
         catch (ApiException ex)
         {
@@ -133,9 +150,11 @@ public partial class JobSearchViewModel : ObservableObject
 
         CanGoPrevious = CurrentPage > 1;
         CanGoNext = CurrentPage < TotalPages;
+
+        var aiNote = RankedWithAi ? " · AI ranked" : "";
         ResultsSummary = TotalCount == 0
             ? "No jobs found."
-            : $"{TotalCount} result{(TotalCount == 1 ? "" : "s")} · page {CurrentPage}/{TotalPages}";
+            : $"{TotalCount} result{(TotalCount == 1 ? "" : "s")} · page {CurrentPage}/{TotalPages} · 15 per page{aiNote}";
     }
 }
 

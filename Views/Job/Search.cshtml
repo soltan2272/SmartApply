@@ -1,8 +1,8 @@
 @model JobApplicationBot.Models.JobSearchViewModel
 @{
     ViewData["Title"] = "Search Jobs";
-    var jobCount = Model.Results.Count(r => r.ResultType == "Job");
-    var postCount = Model.Results.Count(r => r.ResultType == "Post");
+    var jobCount = Model.JobAlertCount;
+    var postCount = Model.HiringPostCount;
 }
 
 <div class="row justify-content-center">
@@ -12,7 +12,7 @@
                 <i class="bi bi-search hero-icon me-2"></i>
                 Find Your Next Role
             </h1>
-            <p class="lead">Search LinkedIn job listings and posts — defaults to Egypt, change location anytime</p>
+            <p class="lead">Search LinkedIn job alerts and hiring posts — leave location blank to search all countries</p>
         </div>
 
         <div class="card card-main mb-4">
@@ -43,7 +43,7 @@
                                 <i class="bi bi-geo-alt me-1 text-primary"></i>Location
                             </label>
                             <input asp-for="Filter.Location" class="form-control form-control-lg"
-                                   placeholder="Egypt" />
+                                   placeholder="Any country" id="searchLocation" />
                         </div>
 
                         <div class="col-12 col-md-2">
@@ -79,6 +79,15 @@
                             </button>
                         </div>
                     </div>
+                    <div class="form-check mt-3">
+                        <input asp-for="Filter.RankWithAi" class="form-check-input" type="checkbox" />
+                        <label asp-for="Filter.RankWithAi" class="form-check-label">
+                            Rank with AI
+                            <span class="text-muted small d-block">
+                                Sorts results by fit to your profile/CV. Best matches first. Uses 1 AI token (Admins: unlimited).
+                            </span>
+                        </label>
+                    </div>
                 </form>
             </div>
         </div>
@@ -92,22 +101,56 @@
                     <span class="badge rounded-pill ms-2" style="background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); font-size: 0.75rem;">
                         @Model.TotalCount result@(Model.TotalCount != 1 ? "s" : "")
                     </span>
+                    @if (Model.RankedWithAi)
+                    {
+                        <span class="badge bg-success rounded-pill ms-1" style="font-size: 0.75rem;">
+                            <i class="bi bi-stars me-1"></i>AI ranked — Match % on each card
+                        </span>
+                    }
                 </h5>
                 <div class="d-flex gap-2 align-items-center">
                     @if (jobCount > 0)
                     {
-                        <span class="badge-category badge-job"><i class="bi bi-briefcase-fill me-1"></i>@jobCount Job@(jobCount != 1 ? "s" : "")</span>
+                        <span class="badge-category badge-job"><i class="bi bi-briefcase-fill me-1"></i>@jobCount Job alert@(jobCount != 1 ? "s" : "")</span>
                     }
                     @if (postCount > 0)
                     {
-                        <span class="badge-category badge-post"><i class="bi bi-chat-square-text-fill me-1"></i>@postCount Post@(postCount != 1 ? "s" : "")</span>
+                        <span class="badge-category badge-post"><i class="bi bi-chat-square-text-fill me-1"></i>@postCount Hiring post@(postCount != 1 ? "s" : "")</span>
+                    }
+                    else
+                    {
+                        <span class="badge-category badge-post text-muted border"><i class="bi bi-chat-square-text me-1"></i>0 Hiring posts</span>
                     }
                     @if (Model.TotalPages > 1)
                     {
-                        <small class="text-muted ms-2">Page @Model.CurrentPage of @Model.TotalPages</small>
+                        <small class="text-muted ms-2">Page @Model.CurrentPage of @Model.TotalPages · 15 per page</small>
                     }
                 </div>
             </div>
+
+            @if (!string.IsNullOrEmpty(Model.AiRankSkipReason))
+            {
+                <div class="alert alert-warning mb-3" role="alert">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    <strong>AI ranking skipped.</strong> @Model.AiRankSkipReason
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.HiringPostsStatus) && postCount == 0)
+            {
+                <div class="alert alert-light border mb-3 small" role="status">
+                    <i class="bi bi-info-circle me-1 text-primary"></i>
+                    @Model.HiringPostsStatus
+                    Job alerts above still come from LinkedIn job listings.
+                </div>
+            }
+            else if (Model.TotalCount > 0 && postCount == 0)
+            {
+                <div class="alert alert-light border mb-3 small" role="status">
+                    <i class="bi bi-info-circle me-1 text-primary"></i>
+                    No hiring posts found for this search. Job alerts above still come from LinkedIn job listings.
+                </div>
+            }
 
             @if (Model.TotalCount == 0)
             {
@@ -124,15 +167,22 @@
                 <div class="row g-3">
                     @foreach (var job in Model.PagedResults)
                     {
-                        var isJob = job.ResultType == "Job";
+                        var isJob = !string.Equals(job.ResultType, "Post", StringComparison.OrdinalIgnoreCase);
                         <div class="col-12 col-md-6">
                             <div class="card card-main h-100 job-card">
                                 <div class="card-body d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="d-flex justify-content-between align-items-start mb-2 gap-2">
                                         <span class="badge-category @(isJob ? "badge-job" : "badge-post")">
                                             <i class="bi @(isJob ? "bi-briefcase-fill" : "bi-chat-square-text-fill") me-1"></i>
-                                            @(isJob ? "Job Listing" : "Post")
+                                            @job.DisplayTag
                                         </span>
+                                        @if (job.MatchScore.HasValue)
+                                        {
+                                            <span class="badge rounded-pill fw-semibold"
+                                                  style="background: linear-gradient(135deg, #0d9488, #059669); color: #fff; font-size: 0.8rem;">
+                                                Match @job.MatchScore%
+                                            </span>
+                                        }
                                     </div>
 
                                     <div class="d-flex align-items-start gap-3 mb-3">
@@ -161,15 +211,23 @@
 
                                     @if (!string.IsNullOrEmpty(job.Snippet))
                                     {
-                                        <p class="text-brand-muted small mb-3 clamp-3">
+                                        <p class="text-brand-muted small mb-2 clamp-3">
                                             @job.Snippet
+                                        </p>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(job.MatchReason))
+                                    {
+                                        <p class="small text-success mb-3">
+                                            <i class="bi bi-stars me-1"></i>@job.MatchReason
                                         </p>
                                     }
 
                                     <div class="d-flex flex-wrap gap-2 mb-3 small">
                                         @if (!string.IsNullOrEmpty(job.Location))
                                         {
-                                            <span class="skill-badge">
+                                            var unverified = string.Equals(job.Location, "Location unverified", StringComparison.OrdinalIgnoreCase);
+                                            <span class="skill-badge @(unverified ? "text-muted" : "")">
                                                 <i class="bi bi-geo-alt me-1"></i>@job.Location
                                             </span>
                                         }
@@ -267,15 +325,15 @@
                         <div class="col-6 col-md-3">
                             <div class="feature-tile">
                                 <i class="bi bi-briefcase"></i>
-                                <strong>Job Listings</strong>
-                                <p class="text-brand-muted small mb-0">Finds formal LinkedIn job postings with "Apply with AI" support</p>
+                                <strong>Job alerts</strong>
+                                <p class="text-brand-muted small mb-0">Fetches multiple pages of LinkedIn job listings with Apply with AI support</p>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="feature-tile">
                                 <i class="bi bi-chat-square-text"></i>
-                                <strong>LinkedIn Posts</strong>
-                                <p class="text-brand-muted small mb-0">Discovers hiring posts from people sharing opportunities</p>
+                                <strong>Hiring posts</strong>
+                                <p class="text-brand-muted small mb-0">Discovers LinkedIn posts where people share open roles</p>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
@@ -303,7 +361,10 @@
     <script>
         document.getElementById('searchForm').addEventListener('submit', function () {
             document.getElementById('loadingOverlay').classList.add('active');
-            document.querySelector('#loadingOverlay h5').textContent = 'Searching jobs & posts in Egypt...';
+            var loc = (document.getElementById('searchLocation')?.value || '').trim();
+            document.querySelector('#loadingOverlay h5').textContent = loc
+                ? ('Searching jobs & posts in ' + loc + '...')
+                : 'Searching jobs & posts...';
         });
 
         document.querySelectorAll('.apply-btn').forEach(function (btn) {

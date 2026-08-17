@@ -27,11 +27,12 @@ public class ApiService
     }
 
     // Jobs
-    public async Task<List<JobSearchResultDto>> SearchJobsAsync(JobSearchRequest request)
+    public async Task<JobSearchResponse> SearchJobsAsync(JobSearchRequest request)
     {
         var response = await _http.PostAsJsonAsync("api/jobs/search", request);
         await EnsureSuccessAsync(response);
-        return await response.Content.ReadFromJsonAsync<List<JobSearchResultDto>>() ?? [];
+        return await response.Content.ReadFromJsonAsync<JobSearchResponse>()
+               ?? new JobSearchResponse();
     }
 
     public async Task<EmailPreviewDto?> AnalyzeJobAsync(JobAnalyzeRequest request)

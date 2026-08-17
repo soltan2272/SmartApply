@@ -129,6 +129,7 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 builder.Services.Configure<SubscriptionSettings>(builder.Configuration.GetSection("Subscription"));
 builder.Services.Configure<DataProtectionSettings>(builder.Configuration.GetSection("DataProtection"));
+builder.Services.Configure<JobSearchSettings>(builder.Configuration.GetSection("JobSearch"));
 
 builder.Services.AddHttpClient<IJobScraperService, JobScraperService>();
 builder.Services.AddHttpClient<IAiService, GeminiAiService>();

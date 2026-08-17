@@ -9,11 +9,13 @@ public partial class DashboardViewModel : ObservableObject
 {
     private readonly ApiService _api;
     private readonly AuthService _auth;
+    private readonly IServiceProvider _services;
 
-    public DashboardViewModel(ApiService api, AuthService auth)
+    public DashboardViewModel(ApiService api, AuthService auth, IServiceProvider services)
     {
         _api = api;
         _auth = auth;
+        _services = services;
     }
 
     [ObservableProperty] private string userEmail = string.Empty;
@@ -91,9 +93,8 @@ public partial class DashboardViewModel : ObservableObject
     private Task LogoutAsync()
     {
         _auth.Logout();
-        var services = Application.Current!.Handler!.MauiContext!.Services;
-        Application.Current!.Windows[0].Page = new NavigationPage(
-            services.GetRequiredService<Pages.LoginPage>());
+        var loginPage = _services.GetRequiredService<Pages.LoginPage>();
+        Application.Current!.Windows[0].Page = new NavigationPage(loginPage);
         return Task.CompletedTask;
     }
 }

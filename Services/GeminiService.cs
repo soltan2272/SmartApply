@@ -35,6 +35,17 @@ public interface IAiService
         string? candidateFullName = null,
         string? overrideApiKey = null,
         CancellationToken ct = default);
+
+    /// <summary>
+    /// Batch-scores job/post search hits against the user profile. Mutates MatchScore / MatchReason and returns the list sorted by score.
+    /// </summary>
+    Task<List<JobSearchResultItem>> RankJobSearchResultsAsync(
+        IReadOnlyList<JobSearchResultItem> results,
+        UserProfile profile,
+        string? cvText = null,
+        string? overrideApiKey = null,
+        int maxToRank = 50,
+        CancellationToken ct = default);
 }
 
 public class GeminiAiService : IAiService
@@ -328,6 +339,85 @@ public class GeminiAiService : IAiService
         return rewritten;
     }
 
+    public async Task<List<JobSearchResultItem>> RankJobSearchResultsAsync(
+        IReadOnlyList<JobSearchResultItem> results,
+        UserProfile profile,
+        string? cvText = null,
+        string? overrideApiKey = null,
+        int maxToRank = 50,
+        CancellationToken ct = default)
+    {
+        if (results.Count == 0)
+            return [];
+
+        const int batchSize = 25;
+        var limit = Math.Clamp(maxToRank <= 0 ? 50 : maxToRank, 1, 100);
+        var toRank = results.Take(limit).ToList();
+        var remainder = results.Skip(limit).ToList();
+
+        for (var offset = 0; offset < toRank.Count; offset += batchSize)
+        {
+            var batch = toRank.Skip(offset).Take(batchSize).ToList();
+            var sb = new StringBuilder();
+            for (var i = 0; i < batch.Count; i++)
+            {
+                var r = batch[i];
+                sb.AppendLine($"[{i}] type={r.ResultType}; title={r.Title}; company={r.Company}; location={r.Location}; snippet={Truncate(r.Snippet ?? "", 180)}");
+            }
+
+            var prompt = $$"""
+                You are ranking job search results for a candidate.
+                Return ONLY a valid JSON array (no markdown). Each element:
+                { "index": 0, "matchScore": 0-100, "reason": "one short sentence why it fits or not" }
+
+                Score based on fit to the candidate profile. Irrelevant hiring noise should score under 40.
+                Include every index from 0 to {{batch.Count - 1}} exactly once.
+
+                Candidate:
+                - Title: {{profile.Title}}
+                - Skills: {{Truncate(profile.SkillsSummary ?? "", 800)}}
+                - Experience: {{Truncate(profile.ExperienceSummary ?? "", 1200)}}
+                - CV excerpt: {{Truncate(cvText ?? "", 1500)}}
+
+                Results:
+                {{sb}}
+                """;
+
+            var responseText = await CallGeminiAsync(prompt, overrideApiKey, ct);
+            var cleaned = CleanJsonResponse(responseText);
+
+            List<AiSearchRankItem>? ranked;
+            try
+            {
+                ranked = JsonSerializer.Deserialize<List<AiSearchRankItem>>(cleaned, JsonOptions);
+            }
+            catch
+            {
+                ranked = null;
+            }
+
+            if (ranked == null)
+                continue;
+
+            foreach (var item in ranked)
+            {
+                if (item.Index < 0 || item.Index >= batch.Count)
+                    continue;
+                batch[item.Index].MatchScore = Math.Clamp(item.MatchScore, 0, 100);
+                batch[item.Index].MatchReason = string.IsNullOrWhiteSpace(item.Reason)
+                    ? null
+                    : item.Reason.Trim();
+            }
+        }
+
+        // Keep all result types (including low-score posts); sort by score only.
+        return toRank
+            .OrderByDescending(r => r.MatchScore ?? -1)
+            .ThenBy(r => r.Title)
+            .Concat(remainder)
+            .ToList();
+    }
+
     private static bool LooksLikeThirdPerson(string text, string? fullName)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -514,5 +604,11 @@ public class GeminiAiService : IAiService
         [property: JsonPropertyName("experienceSummary")] string? ExperienceSummary,
         [property: JsonPropertyName("phone")] string? Phone,
         [property: JsonPropertyName("contactEmail")] string? ContactEmail
+    );
+
+    private record AiSearchRankItem(
+        [property: JsonPropertyName("index")] int Index,
+        [property: JsonPropertyName("matchScore")] int MatchScore,
+        [property: JsonPropertyName("reason")] string? Reason
     );
 }

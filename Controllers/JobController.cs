@@ -7,6 +7,7 @@ using JobApplicationBot.Services.Quota;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace JobApplicationBot.Controllers;
 
@@ -23,6 +24,8 @@ public class JobController : Controller
     private readonly IMemoryCache _cache;
     private readonly IApplicationTrackingService _tracking;
     private readonly ICvTextExtractionService _cvText;
+    private readonly JobSearchSettings _jobSearchSettings;
+    private readonly AiSettings _aiSettings;
 
     public JobController(
         IJobScraperService scraper,
@@ -34,7 +37,9 @@ public class JobController : Controller
         IAiQuotaService quota,
         IMemoryCache cache,
         IApplicationTrackingService tracking,
-        ICvTextExtractionService cvText)
+        ICvTextExtractionService cvText,
+        IOptions<JobSearchSettings> jobSearchSettings,
+        IOptions<AiSettings> aiSettings)
     {
         _scraper = scraper;
         _ai = ai;
@@ -46,6 +51,8 @@ public class JobController : Controller
         _cache = cache;
         _tracking = tracking;
         _cvText = cvText;
+        _jobSearchSettings = jobSearchSettings.Value;
+        _aiSettings = aiSettings.Value;
     }
 
     private string? CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -202,31 +209,42 @@ public class JobController : Controller
     [HttpGet]
     public IActionResult Search(string? searchId, int page = 1)
     {
+        var aiConfigured = !string.IsNullOrWhiteSpace(_aiSettings.ApiKey);
+        var isAdmin = User.IsInRole("Admin");
+
         if (!string.IsNullOrEmpty(searchId) && _cache.TryGetValue(searchId, out JobSearchViewModel? cached) && cached != null)
         {
             cached.CurrentPage = page;
+            // Always show Rank with AI as available in UI for admins; key checked at rank time.
+            cached.AiConfiguredOnServer = aiConfigured || isAdmin;
             return View(cached);
         }
 
         return View(new JobSearchViewModel
         {
-            Filter = new JobSearchFilter { Location = "Egypt" }
+            Filter = new JobSearchFilter(),
+            AiConfiguredOnServer = true
         });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Search(JobSearchFilter filter)
+    public async Task<IActionResult> Search(JobSearchFilter filter, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(filter.Location))
-            filter.Location = "Egypt";
+            filter.Location = null;
+        else
+            filter.Location = filter.Location.Trim();
 
+        var aiConfigured = !string.IsNullOrWhiteSpace(_aiSettings.ApiKey);
+        var isAdmin = User.IsInRole("Admin");
         var searchId = $"{CurrentUserId}:{Guid.NewGuid():N}";
         var viewModel = new JobSearchViewModel
         {
             SearchId = searchId,
             Filter = filter,
-            HasSearched = true
+            HasSearched = true,
+            AiConfiguredOnServer = true
         };
 
         if (string.IsNullOrWhiteSpace(filter.Title))
@@ -237,11 +255,78 @@ public class JobController : Controller
 
         try
         {
-            viewModel.Results = await _scraper.SearchJobsAsync(
+            var outcome = await _scraper.SearchJobsAsync(
                 filter.Title,
                 filter.ExperienceLevel,
                 filter.DatePosted,
                 filter.Location);
+
+            viewModel.Results = outcome.Results;
+            viewModel.HiringPostsStatus = outcome.HiringPostsStatus;
+
+            if (filter.RankWithAi && viewModel.Results.Count > 0)
+            {
+                var userId = CurrentUserId;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    viewModel.AiRankSkipReason = "You must be signed in to use AI ranking.";
+                }
+                else
+                {
+                    var profile = await _profiles.GetByUserIdAsync(userId, ct);
+                    if (profile == null || string.IsNullOrWhiteSpace(profile.FullName))
+                    {
+                        viewModel.AiRankSkipReason = "Complete your profile before using AI ranking.";
+                    }
+                    else if (!aiConfigured && string.IsNullOrWhiteSpace(profile.PersonalGeminiApiKey))
+                    {
+                        viewModel.AiRankSkipReason =
+                            "Configure AI key in server settings (Ai:ApiKey) to use Rank with AI.";
+                    }
+                    else
+                    {
+                        var quotaAllowed = isAdmin;
+                        if (!isAdmin)
+                        {
+                            var quota = await _quota.TryConsumeAsync(userId, ct);
+                            quotaAllowed = quota.Allowed;
+                            if (!quota.Allowed)
+                            {
+                                viewModel.AiRankSkipReason =
+                                    $"Monthly AI quota exhausted ({quota.Limit} used). Results are shown without AI ranking.";
+                            }
+                        }
+
+                        if (quotaAllowed)
+                        {
+                            try
+                            {
+                                string? cvText = null;
+                                var cv = await _cvFiles.GetAsync(userId, ct);
+                                if (cv is { Content.Length: > 0 })
+                                {
+                                    try { cvText = _cvText.ExtractText(cv.Content, cv.FileName, cv.ContentType); }
+                                    catch { /* proceed without CV text */ }
+                                }
+
+                                viewModel.Results = await _ai.RankJobSearchResultsAsync(
+                                    viewModel.Results,
+                                    profile,
+                                    cvText,
+                                    profile.PersonalGeminiApiKey,
+                                    _jobSearchSettings.MaxAiRankResults,
+                                    ct);
+                                viewModel.RankedWithAi = true;
+                            }
+                            catch (Exception rankEx)
+                            {
+                                viewModel.AiRankSkipReason =
+                                    $"AI ranking failed: {rankEx.Message}. Results are shown unranked.";
+                            }
+                        }
+                    }
+                }
+            }
         }
         catch (Exception ex)
         {

@@ -8,7 +8,8 @@ public class JobSearchRequest
     public string Title { get; set; } = string.Empty;
     public string? ExperienceLevel { get; set; }
     public string? DatePosted { get; set; }
-    public string? Location { get; set; } = "Egypt";
+    public string? Location { get; set; }
+    public bool RankWithAi { get; set; }
 }
 
 public class JobAnalyzeRequest
@@ -27,6 +28,12 @@ public class JobSearchResultDto
     public string? LogoUrl { get; set; }
     public string? Snippet { get; set; }
     public string ResultType { get; set; } = "Job";
+    public string DisplayTag =>
+        string.Equals(ResultType, "Post", StringComparison.OrdinalIgnoreCase)
+            ? "Hiring post"
+            : "Job alert";
+    public int? MatchScore { get; set; }
+    public string? MatchReason { get; set; }
 }
 
 public class JobAnalysisDto

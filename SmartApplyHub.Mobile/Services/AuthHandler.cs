@@ -5,10 +5,12 @@ namespace SmartApplyHub.Mobile.Services;
 public class AuthHandler : DelegatingHandler
 {
     private readonly AuthService _auth;
+    private readonly IServiceProvider _services;
 
-    public AuthHandler(AuthService auth)
+    public AuthHandler(AuthService auth, IServiceProvider services)
     {
         _auth = auth;
+        _services = services;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(
@@ -32,11 +34,10 @@ public class AuthHandler : DelegatingHandler
 
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                var services = Application.Current?.Handler?.MauiContext?.Services;
-                if (services == null || Application.Current?.Windows.Count == 0)
+                if (Application.Current?.Windows.Count is null or 0)
                     return;
 
-                var loginPage = services.GetRequiredService<Pages.LoginPage>();
+                var loginPage = _services.GetRequiredService<Pages.LoginPage>();
                 Application.Current!.Windows[0].Page = new NavigationPage(loginPage);
             });
         }
